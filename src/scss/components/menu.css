@@ -5,7 +5,7 @@
 }
 
 body {
-	background: rgba(91, 55, 183, 1);
+	background: rgba(223, 10, 10, 0.8);
 	font-family: 'Lato', sans-serif;
 	flex-direction: column;
 	transition: background 0.4s linear;
@@ -14,7 +14,7 @@ body {
 }
 
 h2 {
-	color: #fff;
+	/* color: #fff; */
 	position: absolute;
 	top: 20px;
 }
@@ -112,9 +112,4 @@ footer p {
 
 footer i {
     color: red;
-}
-
-footer a {
-    color: #3c97bf;
-    text-decoration: none;
 }

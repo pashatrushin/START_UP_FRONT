@@ -4,17 +4,18 @@ export default function EmptyCart(){
 
   return (
     <>
-            <div className="flex w-full  bg-red-600 px-3 py-3">
-              <Link to={`/`} className='font-bold flex justify-between gap-1 items-center px-[10px] py-1 w-auto'>
-                <img src={arrow_back} alt="" className='h-5 absolute'/>
-              </Link>
-               <h1 className='text-white font-term text-2xl w-full text-center tracking-widest'>Мой заказ</h1>
+            <div className="w-full  bg-headerNav bg-cover flex justify-center items-center">
+              <h1 className="text-white font-term text-2xl w-full text-center tracking-[5px] leading-5 px-5 py-5">
+                Корзниа
+              </h1>
             </div>
-      <div className='h-[60vh] bg-white flex flex-col justify-center items-center gap-9'>
-        <h1 className="text-[40px] font-term text-center leading-10 tracking-widest relative top-[50px]">КОРЗИНА
+      <div className='h-[76vh] bg-white flex flex-col justify-center items-center gap-9 text-center'>
+        {/* <div> */}
+        <h1 className="text-[40px] font-term text-center leading-10 tracking-widest relative">КОРЗИНА
           ПУСТАЯ</h1>
-        <p className="font-next text-center leading-5 tracking-widest font-[100] text-[13px] relative top-[70px]">Добавьте что-то из меню чтобы сделать заказ</p>
+        <p className="font-next text-center leading-5 tracking-widest font-[100] text-[13px] relative">Добавьте что-то из меню чтобы сделать заказ</p>
         <Link to='/' className="bg-red-600 text-white px-7 py-2 rounded-md uppercase font-next font-bold">На Главную</Link>
+        {/* </div> */}
       </div>
     </>
   )

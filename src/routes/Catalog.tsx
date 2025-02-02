@@ -26,6 +26,8 @@ import { Category } from "../redux/filter/types";
 import { fetchPizzas } from "../redux/pizza/asyncActions";
 import { selectPizzaData } from "../redux/pizza/selectors";
 import { redirect, useNavigate } from "react-router-dom";
+import menuSvg from '../assets/images/menu.svg';
+import { GiMilkCarton } from "react-icons/gi";
 import Cart from "./Cart";
 import Error from "./Error";
 import { Link } from "react-router-dom";
@@ -36,6 +38,7 @@ import { FavoriteContext } from "./Favorites";
 import axios from "axios";
 import "../scss/components/menu.css";
 import { FaHome, FaHeart, FaSearch, FaUser } from "react-icons/fa";
+import Preloader from "./Preloader";
 
 export const Catalog: React.FC = () => {
   const navigate = useNavigate();
@@ -63,7 +66,8 @@ export const Catalog: React.FC = () => {
     // const sortBy = sort.sortProperty.replace('-', '')
     const sortBy = "hierarchicalId";
     const order = sort.sortProperty.includes("-") ? "asc" : "desc";
-    const categoryId = category.id > 0 ? String(category.id) : "";
+    // const categoryId = category.id > 0 ? String(category.id) : "";
+    const categoryId = category.id > 0 ? String(category.id) : '';
     const search = searchValue;
 
     dispatch(
@@ -83,7 +87,7 @@ export const Catalog: React.FC = () => {
     if (isMounted.current) {
       const params = {
         categoryId: category.id > 0 ? category.id : null,
-        currentPage: currentPage,
+        // currentPage: currentPage,
       };
 
       const queryString = qs.stringify(params, { skipNulls: true });
@@ -127,43 +131,43 @@ export const Catalog: React.FC = () => {
         const clickedTabBGColor =
           getComputedStyle(clickedTab).getPropertyValue("color");
         console.log(clickedTabBGColor);
-        document.body.style.background = clickedTabBGColor;
+        // document.body.style.background = clickedTabBGColor;
       });
     });
   });
   // Парсим параметры при первом рендере
-  useEffect(() => {
-    if (window.location.search) {
-      const params = qs.parse(
-        window.location.search.substring(1)
-      ) as unknown as SearchPizzaParams;
-      const sort = sortList.find((obj) => obj.sortProperty === params.sortBy);
-      const category = categoriesList.find(
-        (obj) => obj.id === Number(params.category)
-      );
+  // useEffect(() => {
+  //   if (window.location.search) {
+  //     const params = qs.parse(
+  //       window.location.search.substring(1)
+  //     ) as unknown as SearchPizzaParams;
+  //     const sort = sortList.find((obj) => obj.sortProperty === params.sortBy);
+  //     const category = categoriesList.find(
+  //       (obj) => obj.id === Number(params.category)
+  //     );
 
-      dispatch(
-        setFilters({
-          searchValue: params.search,
-          category: category || categoriesList[0],
-          currentPage: Number(params.currentPage),
-          sort: sort || sortList[0],
-        })
-      );
-    }
+  //     dispatch(
+  //       setFilters({
+  //         searchValue: params.search,
+  //         category: category || categoriesList[0],
+  //         currentPage: Number(params.currentPage),
+  //         sort: sort || sortList[0],
+  //       })
+  //     );
+  //   }
     isMounted.current = true;
-    axios
-      .get(`https://127.0.0.1:8000/user/${userParams.user}/fav`)
-      .then((e) => {
-        let arr: any = [];
-        e.data.forEach((item: any) => {
-          arr.push(item);
-        });
-        setLikeItems(arr);
-        localStorage.setItem("likeItems", JSON.stringify(arr));
-      })
-      .catch((error) => console.error("Error fetching favorites:", error));
-  }, [dispatch, userParams.user]);
+  //   axios
+  //     .get(`https://127.0.0.1:8000/user/${userParams.user}/fav`)
+  //     .then((e) => {
+  //       let arr: any = [];
+  //       e.data.forEach((item: any) => {
+  //         arr.push(item);
+  //       });
+  //       setLikeItems(arr);
+  //       localStorage.setItem("likeItems", JSON.stringify(arr));
+  //     })
+  //     .catch((error) => console.error("Error fetching favorites:", error));
+  // }, [dispatch, userParams.user]);
 
   const sortedItems = [...items].sort((a: any, b: any) => a.id - b.id);
   const pizzas = sortedItems.map((obj: any) => (
@@ -225,27 +229,35 @@ export const Catalog: React.FC = () => {
                 />
               </div>
               <div className="info__wrapper"></div>
-              <div className="grid grid-cols-2 gap-3 overflow-hidden overflow-y-scroll px-2 py-4">
-                {status === "loading" ? skeletons : pizzas}
+              <div className="grid grid-cols-2 gap-3 overflow-hidden overflow-y-scroll px-2 pb-[100px] pt-5">
+                {/* {status === "loading" ? skeletons : pizzas} */}
+                {status === "loading" ? <Preloader /> : pizzas}
+                {/* {<Preloader/>} */}
               </div>
-              <div className="tab-nav-container">
+              {/* <div className="flex justify-center items-center w-[100vw] px-5 h-[20px] fixed bottom-[100px] left-0"> */}
+                {/* <div className="tab-nav-container">
                   <div className="tab active purple">
                     <FaHome size={20} />
-                    <p>Home</p>
+                    <a href="/favorites">
+                      <p>Главная</p>
+                    </a>
+                  </div>
+                  <div className="tab yellow">
+                    <img src={menuSvg} alt="" className="i" />
+                    <p>Меню</p>
                   </div>
                   <div className="tab pink">
                     <FaHeart size={20} className="i" />
-                    <p>Likes</p>
-                  </div>
-                  <div className="tab yellow">
-                    <FaSearch size={20} className="i" />
-                    <p>Search</p>
+                    <a href="/favorites">
+                      <p>Избранное</p>
+                    </a>
                   </div>
                   <div className="tab teal">
-                    <FaUser size={20} className="i" />
-                    <p>Profile</p>
+                    <GiMilkCarton className="i w-[20px] h-[20px]" />
+                    <p>Корзина</p>
                   </div>
-                </div>
+                </div> */}
+              {/* </div> */}
             </div>
           </div>
         </div>

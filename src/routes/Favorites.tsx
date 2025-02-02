@@ -65,7 +65,7 @@ export default function Favorites() {
   }, [])
   return (
     <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
-      <div className="">
+      <div className="h-full bg-white">
       {likeItems.length > 0 ? (
         <div className="container container--cart">
           <div className="cart">

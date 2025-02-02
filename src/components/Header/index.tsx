@@ -27,9 +27,6 @@ export const Header: React.FC = () => {
             <div>
               <img src={Kimchistop} alt="" />
             </div>
-            <Link to={'/favorites'}>
-              <img className='w-15 relative left-2' src={HeartButton} alt="" />
-            </Link>
             
           </div>
         {/* </Link> */}

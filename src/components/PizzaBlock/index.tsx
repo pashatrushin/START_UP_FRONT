@@ -1,54 +1,56 @@
-import React, { useContext, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { selectCartItemById } from '../../redux/cart/selectors'
-import { CartItem } from '../../redux/cart/types'
-import heart_img from '../../assets/images/heart_img.svg'
-import heart_active from '../../assets/images/heart.png'
-import { FavItem } from '../../redux/favorite/types_fav'
-import { addItem, minusItem, removeItem} from '../../redux/cart/slice'
-import { CartItem as CartItemType } from '../../redux/cart/types'
-import { HiPlusSm } from "react-icons/hi"
-import { HiMinusSm } from "react-icons/hi"
-import { removeItemFav } from '../../redux/favorite/favSlice'
-import { addItemFav } from '../../redux/favorite/favSlice'
-import axios from 'axios'
-import qs from 'qs'
-import $ from 'jquery'
-import { FavoriteContext } from '../../routes/Favorites'
-import { GlobalContext } from '../../routes/router'
-
+import React, { useContext, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { selectCartItemById } from "../../redux/cart/selectors";
+import { CartItem } from "../../redux/cart/types";
+import heart_img from "../../assets/images/heart_img.svg";
+import heart_active from "../../assets/images/heart.png";
+import { FavItem } from "../../redux/favorite/types_fav";
+import { addItem, minusItem, removeItem } from "../../redux/cart/slice";
+import { CartItem as CartItemType } from "../../redux/cart/types";
+import { HiPlusSm } from "react-icons/hi";
+import { HiMinusSm } from "react-icons/hi";
+import { removeItemFav } from "../../redux/favorite/favSlice";
+import { addItemFav } from "../../redux/favorite/favSlice";
+import axios from "axios";
+import qs from "qs";
+import { FavoriteContext } from "../../routes/Favorites";
+import { GlobalContext } from "../../routes/router";
+import './index.css'
 
 type PizzaBlockProps = {
-  id: string,
-  image: string,
-  name: string,
-  price: number,
-  count: number,
-  description: string,
-  imageSrc: string,
-  likeImageSrc: string,
+  id: string;
+  image: string;
+  name: string;
+  price: number;
+  count: number;
+  description: string;
+  imageSrc: string;
+  likeImageSrc: string;
   maxLength?: number;
-}
+};
 export const PizzaBlock: React.FC<PizzaBlockProps> = ({
-  id = '0',
+  id = "0",
   image,
-  name = '',
+  name = "",
   price = 0,
   count = 0,
-  description = '',
+  description = "",
   maxLength = 9,
 }) => {
-  const like = useRef(null)
-  const dispatch = useDispatch()
-  const {likeItems, setLikeItems} = useContext(FavoriteContext)
-  const [items, setItems] = useState([])
+  const like = useRef(null);
+  const dispatch = useDispatch();
+  const { likeItems, setLikeItems } = useContext(FavoriteContext);
+  const [items, setItems] = useState([]);
 
-  const cartItem = useSelector(selectCartItemById(id))
+  const cartItem = useSelector(selectCartItemById(id));
   const params = useContext(GlobalContext);
-  var [isCounter, setIsCounter] = useState(localStorage.getItem('isCounter') === 'true')
-  const addedCount = cartItem ? cartItem.count: 0
-  const counter = cartItem ? cartItem.isCounter: false
+  var [isCounter, setIsCounter] = useState(
+    localStorage.getItem("isCounter") === "true"
+  );
+  const addedCount = cartItem ? cartItem.count : 0;
+  const counter = cartItem ? cartItem.isCounter : false;
+  const [isHeartActive, setIsHeartActive] = useState(false); ///
   const onClickAdd = () => {
     const item: CartItem = {
       id,
@@ -57,51 +59,50 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       image,
       count: 0,
       description,
-      isCounter
-    }
-    dispatch(addItem(item))
-  }
+      isCounter,
+    };
+    dispatch(addItem(item));
+  };
 
   const getStorageValue = (key: string, defaultValue: any): any => {
     try {
-      const value = localStorage.getItem(key)
-      return value ? JSON.parse(value) : defaultValue
+      const value = localStorage.getItem(key);
+      return value ? JSON.parse(value) : defaultValue;
     } catch (error) {
-      console.error(error)
-      return defaultValue
+      console.error(error);
+      return defaultValue;
     }
   };
-  
+
   const setStorageValue = (key: string, value: any): void => {
     try {
-      localStorage.setItem(key, JSON.stringify(value))
+      localStorage.setItem(key, JSON.stringify(value));
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
   const [isLiked, setIsLiked] = useState<boolean>(() =>
     getStorageValue(`likeButton_${id}`, false)
-  )
+  );
   const onClickRemoveFav = () => {
-    if (window.confirm('Вы точно хотите удалить товар из избранного?')) {
-      dispatch(removeItemFav(id))
-      setIsLiked(false)
-      setStorageValue(`likeButton_${id}`, !isLiked)
+    if (window.confirm("Вы точно хотите удалить товар из избранного?")) {
+      dispatch(removeItemFav(id));
+      setIsLiked(false);
+      setStorageValue(`likeButton_${id}`, !isLiked);
     }
-  }
-  const onClickFav = () => {
-    axios.patch(`https://127.0.0.1:8000/user/${params.user}/fav?favourite_item=${id}`).then(res => {
-      setLikeItems(res.data)
-      localStorage.setItem('likeItems', JSON.stringify(res.data))
-    })
-    
-    
-  }
+  };
+  // const onClickFav = () => {
+  //   axios.patch(`https://127.0.0.1:8000/user/${params.user}/fav?favourite_item=${id}`).then(res => {
+  //     setLikeItems(res.data)
+  //     localStorage.setItem('likeItems', JSON.stringify(res.data))
+  //   })
+
+  // }
   const handleClick = () => {
-    setIsLiked(!isLiked)
-    setStorageValue(`likeButton_${id}`, !isLiked)
-  }
-  const selectedOptionFav = localStorage.getItem("selectedOptionFav")
+    setIsLiked(!isLiked);
+    setStorageValue(`likeButton_${id}`, !isLiked);
+  };
+  const selectedOptionFav = localStorage.getItem("selectedOptionFav");
   const onClickAddFav = () => {
     const item_fav: FavItem = {
       id,
@@ -110,23 +111,21 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       image,
       count: 0,
       description,
-      isCounter
-    }
-    dispatch(addItemFav(item_fav))
+      isCounter,
+    };
+    dispatch(addItemFav(item_fav));
     // handleClick()
-    setIsLiked(!isLiked)
+    setIsLiked(!isLiked);
     if (!isLiked) {
-      setIsLiked(true)
+      setIsLiked(true);
       // setStorageValue(`likeButton_${id}`, !isLiked)
-    }
-    else if(isLiked){
-      setIsLiked(false)
+    } else if (isLiked) {
+      setIsLiked(false);
       // setStorageValue(`likeButton_${id}`, isLiked)
-      onClickRemoveFav()
+      onClickRemoveFav();
     }
     // handleClick()
-  }
-  
+  };
 
   const handleAddToCart = () => {
     const item: CartItem = {
@@ -136,17 +135,16 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       image,
       count: addedCount,
       description,
-      isCounter
-    }
-    dispatch(addItem(item))
+      isCounter,
+    };
+    dispatch(addItem(item));
     // setIsCounter(true)
-    if(addedCount > 0){
-      isCounter = true
-      localStorage.setItem('isCounter', (isCounter === true).toString())
-    }
-    else{
-      isCounter = false
-      localStorage.setItem('isCounter', (isCounter === false).toString())
+    if (addedCount > 0) {
+      isCounter = true;
+      localStorage.setItem("isCounter", (isCounter === true).toString());
+    } else {
+      isCounter = false;
+      localStorage.setItem("isCounter", (isCounter === false).toString());
     }
     // isCounter = true
     // if(count > 0){
@@ -157,41 +155,43 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     //   localStorage.setItem('count', addedCount.toString())
     //   localStorage.setItem('isCounter', (isCounter === false).toString())
     // }
-    console.log(isCounter)
-  }
+    console.log(isCounter);
+  };
   const onClickPlus = () => {
     dispatch(
       addItem({
         id,
-      } as CartItemType),
-    )
-  }
+      } as CartItemType)
+    );
+  };
 
   const onClickMinus = () => {
-    if (addedCount === 1){
-      onClickRemove()
-      setIsCounter(false)
-    } 
-    if (addedCount > 1) dispatch(minusItem(id))
-  }
+    if (addedCount === 1) {
+      onClickRemove();
+      setIsCounter(false);
+    }
+    if (addedCount > 1) dispatch(minusItem(id));
+  };
 
   const onClickRemove = () => {
-    if (window.confirm('Вы точно хотите удалить товар?')) {
-      dispatch(removeItem(id))
+    if (window.confirm("Вы точно хотите удалить товар?")) {
+      dispatch(removeItem(id));
     }
-  }
-  const checkbutton: any = () => {
-    return likeItems.find((item: any) => item.id === id) ? heart_active : heart_img
-  }
-
+  };
+  // const checkbutton: any = () => {
+  //   return likeItems.find((item: any) => item.id === id) ? heart_active : heart_img
+  // }
+  const checkbutton = () => {
+    return isHeartActive ? heart_active : heart_img;
+  };
   React.useEffect(() => {
-    localStorage.setItem('count', addedCount.toString())
-    localStorage.setItem('isCounter', setIsCounter.toString())
-  }, [addedCount, isCounter])
-  React.useEffect(() => {
-      $(`.like_${id}`).attr('src', checkbutton)
-  }, [])
-  const [isTruncated, setIsTruncated] = useState(true)
+    localStorage.setItem("count", addedCount.toString());
+    localStorage.setItem("isCounter", setIsCounter.toString());
+  }, [addedCount, isCounter]);
+  // React.useEffect(() => {
+  //   $(`.like_${id}`).attr("src", checkbutton);
+  // }, []);
+  const [isTruncated, setIsTruncated] = useState(true);
 
   // const truncatedText = description.split(' ').slice(0, maxLength).join(' ')
   return (
@@ -254,7 +254,8 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                 </button>
               </div>
             )}
-            <button onClick={onClickFav}>
+            {/* <button onClick={onClickFav}> */}
+            {/* <button>
               <img
                 alt=""
                 ref={like}
@@ -264,10 +265,53 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                 }}
                 className={`like_${id} w-[25px] h-[25px] top-[0px] relative`}
               />
-            </button>
+            </button> */}
+            {/* <button>
+                  <img
+                    alt=""
+                    src={checkbutton()}
+                    onClick={() => {
+                      // Меняем состояние сердечка
+                      setIsHeartActive(!isHeartActive);
+                    }}
+                    className="like w-[25px] h-[25px] top-[0px] relative"
+                  />
+                </button> */}
+            <div className="heart-container" title="Like">
+              <input type="checkbox" className="checkbox" id="Give-It-An-Id" />
+              <div className="svg-container">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="svg-outline"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Zm-3.585,18.4a2.973,2.973,0,0,1-3.83,0C4.947,16.006,2,11.87,2,8.967a4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,11,8.967a1,1,0,0,0,2,0,4.8,4.8,0,0,1,4.5-5.05A4.8,4.8,0,0,1,22,8.967C22,11.87,19.053,16.006,13.915,20.313Z"></path>
+                </svg>
+                <svg
+                  viewBox="0 0 24 24"
+                  className="svg-filled"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M17.5,1.917a6.4,6.4,0,0,0-5.5,3.3,6.4,6.4,0,0,0-5.5-3.3A6.8,6.8,0,0,0,0,8.967c0,4.547,4.786,9.513,8.8,12.88a4.974,4.974,0,0,0,6.4,0C19.214,18.48,24,13.514,24,8.967A6.8,6.8,0,0,0,17.5,1.917Z"></path>
+                </svg>
+                <svg
+                  className="svg-celebrate"
+                  width="100"
+                  height="100"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <polygon points="10,10 20,20"></polygon>
+                  <polygon points="10,50 20,50"></polygon>
+                  <polygon points="20,80 30,70"></polygon>
+                  <polygon points="90,10 80,20"></polygon>
+                  <polygon points="90,50 80,50"></polygon>
+                  <polygon points="80,80 70,70"></polygon>
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
-}
+};

@@ -23,7 +23,9 @@ import sbp from '../assets/images/sbp.svg'
 import cash from '../assets/images/cash.svg'
 import $ from 'jquery'
 import { selectComment } from '../redux/comment/selectors'
-
+import "jquery"
+import { useEffect } from 'react'
+// import { JQuery } from 'jquery'
 export default function Cart({ initialCount = 1 }) {
 
   const dispatch = useDispatch()
@@ -38,7 +40,9 @@ export default function Cart({ initialCount = 1 }) {
   const day: any = new Date().getDate()
   const selectedOption = localStorage.getItem("selectedOption")
   const selectedOptionPay = localStorage.getItem("selectedOptionPay")
-
+  const [promo, setPromo] = useState(""); // Состояние для ввода промокода
+  const [promoError, setPromoError] = useState(""); // Состояние для ошибки
+  const [promoActive, setPromoActive] = useState(false);
   let sendData: any = {
     "number": Math.floor(Math.random() * 100000),
     "items": items,
@@ -52,24 +56,25 @@ export default function Cart({ initialCount = 1 }) {
     "cutlery": localStorage.getItem("spoonCount"),
     "client": userID
   }
-  console.log(params, sendData)
+  // console.log(params, sendData)
   const onClickPromo = () => {
-
-    if ($('.promo').val() === "") {
-      $('.promo-error').text("Ввведите промокод")
-    }
-    if ($('.promo').val() === "KIMCHI10" || $('.promo').val() === "kimchi10" || $('.promo').val() === "Kimchi10") {
-      dispatch(discount())
-      $(".promo-error").addClass("hidden")
-      $('.promo').val("")
-      $(".promo-block").addClass("hidden")
-      $(".promo-actived").removeClass("hidden")
-      localStorage.setItem('promocode', "true")
-    } if ($('.promo').val() !== "KIMCHI10" && $('.promo').val() !== "") {
-      $('.promo-error').text("Данный промокод не действителен или истёк!")
+    if (promo === "") {
+      setPromoError("Введите промокод");
+      return;
     }
 
-  }
+    // Проверка на валидный промокод (регистр не имеет значения)
+    if (promo.toLowerCase() === "kimchi10") {
+      dispatch(discount());
+      setPromoError(""); // Очистка ошибок
+      setPromoActive(true); // Устанавливаем промокод как активный
+      setPromo(""); // Очищаем поле ввода
+      localStorage.setItem("promocode", "true"); // Сохраняем в localStorage
+    } else {
+      setPromoError("Данный промокод не действителен или истёк!"); // Ошибка для неверного промокода
+    }
+  };
+
   const onClickPay = () => {
 
 
@@ -102,17 +107,19 @@ export default function Cart({ initialCount = 1 }) {
       setCount(parseInt(storedCount))
     }
   }
-  React.useEffect(() => {
-    loadFromLocalStorage()
-    if (!localStorage.getItem('promocode')) {
-      localStorage.setItem('promocode', "false")
+  useEffect(() => {
+    // Проверка localStorage при загрузке компонента
+    const promoStatus = localStorage.getItem("promocode");
+
+    if (!promoStatus) {
+      localStorage.setItem("promocode", "false");
     }
-    if (localStorage.getItem('promocode') === "true") {
-      $('.promo-block').addClass("hidden")
-      $('.promo-actived').removeClass("hidden")
-    }
-    setPromoactive(localStorage.getItem('promocode') === "true")
-  }, [])
+
+    const isPromoActive = localStorage.getItem("promocode") === "true";
+
+    // Обновление состояния React
+    setPromoActive(isPromoActive);
+  }, []);
 
   React.useEffect(() => {
     saveToLocalStorage()
@@ -132,7 +139,7 @@ export default function Cart({ initialCount = 1 }) {
     <div className='content'>
       {items.length > 0 ? (
         <div className='container container--cart'>
-          <div className='cart'>
+          <div className='cart pb-[7vh] h-auto'>
             <div className="flex w-full  bg-red-600 px-3 py-3">
               <Link to={`/`} className='font-bold flex justify-between gap-1 items-center px-[10px] py-1 w-auto'>
                 <img src={arrow_back} alt="" className='h-5 absolute' />

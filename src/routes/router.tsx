@@ -19,7 +19,7 @@ import { PizzaBlockProps } from './Detail'
 import qs from 'qs'
 import { render } from 'react-dom'
 import { FavoriteContext } from './Favorites'
-
+import { Home } from './Home'
 
 // const [selectedDeliveryName, setSelectedDeliveryName] = useState<string>('');
 
@@ -61,6 +61,10 @@ export const router = createBrowserRouter([
       {
         path: '*',
         element: <GlobalContext.Provider value={tgParams}><NotFound /></GlobalContext.Provider>,
+      },
+      {
+        path: '/home',
+        element: <GlobalContext.Provider value={tgParams}><Home /></GlobalContext.Provider>,
       },
       {
         path: '/',

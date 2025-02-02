@@ -14,18 +14,18 @@ type CartItemProps = {
   id: string,
   image: string,
   name: string,
-  cost: number,
+  price: number,
   count: number,
-  description_simple: string
+  description: string
 }
 
 export const CartItem: React.FC<CartItemProps> = ({
   id = '0',
   image = '',
   name = '',
-  cost = 0,
+  price = 0,
   count = 0,
-  description_simple = ''
+  description = ''
 }) => {
   const dispatch = useDispatch()
 
@@ -63,7 +63,7 @@ export const CartItem: React.FC<CartItemProps> = ({
       <div className='w-[165px]'>
         <Link key={id} to={`/pizza/${id}`} className='gap-2 flex flex-col'>
           <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{name}</h3>
-          <p className='font-next text-[6px] leading-2'>{description_simple}</p>
+          <p className='font-next text-[6px] leading-2 overflow-hidden whitespace-nowrap text-ellipsis'>{description}</p>
         </Link>
         <div className='flex items-center gap-2 mt-2'>
             <button
@@ -89,7 +89,7 @@ export const CartItem: React.FC<CartItemProps> = ({
           </div>
         </div>
         <div className='text-right'>
-          <b className='text-xl font-term color w-[80px] text-right text-stone-600'>{cost * count} P</b>
+          <b className='text-xl font-term color w-[80px] text-right text-stone-600'>{price * count} P</b>
         </div>
       </div>
     </div>

@@ -44,6 +44,7 @@ export const Detail = () => {
   const [activeType, setactiveType] = useState(0)
   const [activeSize, setActiveSize] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [checkButton, setCheckButton] = useState("");
   const [pizza, setPizza] = useState<PizzaBlockProps>({
     "id": '0',
     "image": '',
@@ -90,6 +91,25 @@ export const Detail = () => {
   const checkbutton: any = () => {
     return likeItems.find((item: any) => item.id === pizza.id) ? heart_active : heart_img
   }
+
+
+
+  // useEffect(() => {
+  //   // Устанавливаем начальное состояние кнопки "лайк"
+  //   setCheckButton(pizza.isLiked ? 'liked-icon-url' : 'unliked-icon-url');
+  // }, [pizza.isLiked]); // Обновляем состояние при изменении pizza.isLiked
+
+  // const handleLikeClick = () => {
+  //   // Переключаем состояние "лайкнутого" статуса
+  //   const newCheckButton = checkButton === 'liked-icon-url' ? 'unliked-icon-url' : 'liked-icon-url';
+  //   setCheckButton(newCheckButton);
+
+  //   // Дополнительно, обновляем pizza.isLiked на сервере или в глобальном состоянии
+  //   // pizza.isLiked = !pizza.isLiked; // Пример, обновить состояние
+  // };
+
+
+
 
   const handleClick = () => {
     setIsLiked(!isLiked);
@@ -197,23 +217,41 @@ export const Detail = () => {
     } 
     if (addedCount > 1) dispatch(minusItem(pizza.id))
   }
+  // useEffect(() => {
+  //   async function fetchPizza() {
+  //     try {
+  //       const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-product/${params.id}`)
+  //       // const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-products/${pizza.id}`)
+
+  //       setPizza(data)
+  //       setLoading(false)
+  //     } catch (error) {
+  //       setLoading(false)
+  //       alert('Ошибка при получении товара!')
+  //       navigate('/')
+  //     }
+  //   }
+  //   fetchPizza()
+  //   $(`.like_${pizza.id}`).attr('src', checkbutton)
+  // }, [])
+
+
   useEffect(() => {
     async function fetchPizza() {
       try {
-        const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-product/${params.id}`)
-        // const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-products/${pizza.id}`)
+        const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-product/${params.id}`);
 
-        setPizza(data)
-        setLoading(false)
+        setPizza(data);
+        setLoading(false);
       } catch (error) {
-        setLoading(false)
-        alert('Ошибка при получении товара!')
-        navigate('/')
+        setLoading(false);
+        alert('Ошибка при получении товара!');
+        navigate('/');
       }
     }
-    fetchPizza()
-    $(`.like_${pizza.id}`).attr('src', checkbutton)
-  }, [])
+
+    fetchPizza();
+  }, [params.id, navigate]);
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [])
@@ -275,9 +313,15 @@ export const Detail = () => {
                     )}
                     </div>
                     <button onClick={onClickFav}>
-                    <img alt="" src= {checkbutton()} onClick={()=>{
+                    {/* <img alt="" src= {checkbutton()} onClick={()=>{
                     $(`.like_${pizza.id}`).attr('src', checkbutton())
-                  }} className={`like_${pizza.id} w-[10vw]`} />
+                  }} className={`like_${pizza.id} w-[10vw]`} /> */}
+                        {/* <img 
+                          alt="Like button" 
+                          src={checkButton} 
+                          onClick={handleLikeClick} 
+                          className={`like_${pizza.id} w-[10vw]`} 
+                        /> */}
                     </button>
                   </div>
                 </div>
