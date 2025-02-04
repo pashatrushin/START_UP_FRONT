@@ -19,7 +19,7 @@ export const Header: React.FC = () => {
   }, [items])
 
   return (
-    <header className='p-3 bg-white rounded-t-[40px]'>
+    <header className='p-3 bg-white rounded-t-[40px] h-20'>
       <div className='flex justify-around'>
         {/* <Link to={'/'} > */}
           <div className='flex justify-between gap-10'>

@@ -9,8 +9,6 @@ import { useParams } from 'react-router-dom'
 // import { NotFound } from './NotFound'
 // import { ErrorPage } from './ErrorPage'
 // import { Delivery } from './Delvery'
-import { DeliveryType } from './Delivery_Type'
-import DeliverySelectionPage from './DeliverySelectionPage';
 import { GlobalLoader } from '../components/GlobalLoader'
 // import { Cart } from './Cart';
 import { useState } from 'react'
@@ -37,8 +35,6 @@ const Orders: React.FC = React.lazy(() => import(/*webpackChunkName: "Orders"*/'
 const NotFound: React.FC = React.lazy(() => import(/*webpackChunkName: "NotFound"*/'./NotFound'))
 const ErrorPage: React.FC = React.lazy(() => import(/*webpackChunkName: "ErrorPage"*/'./ErrorPage'))
 // const DeliverySelectionPage: React.FC = React.lazy(() => import(/*webpackChunkName: "DeliverySelectionPage"*/'./DeliverySelectionPage'))
-const Comment: React.FC = React.lazy(() => import(/*webpackChunkName: "Delivery"*/'./Comment'))
-const Payment: React.FC = React.lazy(() => import(/*webpackChunkName: "Delivery"*/'./Payment'))
 const Favorites: React.FC = React.lazy(() => import(/*webpackChunkName: "Delivery"*/'./Favorites'))
 
 let tgParams: any = qs.parse(window.location.search.substring(1))
@@ -75,25 +71,12 @@ export const router = createBrowserRouter([
         element: <GlobalContext.Provider value={tgParams}><Detail /></GlobalContext.Provider>
       },
       {
-        path: 'delivery',
-        // element: <DeliverySelectionPage onSelect={handleDeliverySelection}/>
-        element: <GlobalContext.Provider value={tgParams}><DeliverySelectionPage/></GlobalContext.Provider>
-      },
-      {
         path: 'orders',
         element: <GlobalContext.Provider value={tgParams}><Orders /></GlobalContext.Provider>,
       },
       {
         path: 'cart',
         element: <GlobalContext.Provider value={tgParams}><Cart/></GlobalContext.Provider>,
-      },
-      {
-        path: 'comment',
-        element: <GlobalContext.Provider value={tgParams}><Comment/></GlobalContext.Provider>
-      },
-      {
-        path: 'payment',
-        element: <GlobalContext.Provider value={tgParams}><Payment/></GlobalContext.Provider>
       },
       {
         path: 'favorites',
