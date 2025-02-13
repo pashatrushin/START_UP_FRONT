@@ -113,7 +113,7 @@ export default function Cart({ initialCount = 1 }) {
   const saveToLocalStorage = () => {
     localStorage.setItem('spoonCount', count.toString())
   }
-
+  
   const loadFromLocalStorage = () => {
     const storedCount = localStorage.getItem('spoonCount')
     if (storedCount) {
@@ -197,6 +197,9 @@ export default function Cart({ initialCount = 1 }) {
                   </button>
                 </div>
               </div>
+              <div className='flex justify-between px-2 py-2 items-center bg-[#9e9999] border-b-[1px] border-[#A2A2A2] w-full'>
+                  <input type="text" placeholder='email для отправки чека' className='w-full px-2 py-2 text-lg rounded-xl'/>
+              </div>
               {/* <div className='flex w-full justify-between px-2 py-2 bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2]'>
                 <span className='uppercase font-term text-2xl'> Итого: </span>
                 <p className='uppercase font-term text-2xl'>{totalPrice} P</p>
@@ -225,7 +228,7 @@ export default function Cart({ initialCount = 1 }) {
                 </div>
               </div>
 
-              <div className="hidden flex justify-between px-2 py-4 items-center bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2] promo-actived">
+              {/* <div className="hidden flex justify-between px-2 py-4 items-center bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2] promo-actived">
                 <div className="flex items-center gap-4 ml-2">
                   <img src={promo} alt="" />
                   <div className="flex flex-col gap-1">
@@ -234,7 +237,7 @@ export default function Cart({ initialCount = 1 }) {
                     </h1>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="flex justify-between">
                 <button

@@ -32,7 +32,7 @@ import Error from "./Error";
 import { Link } from "react-router-dom";
 import arrow_back from "../assets/images/Arrow 5.svg";
 import { GlobalContext } from "./router";
-import { userState } from "../redux/user/slice";
+import userSlice from '../redux/user/slice'
 import { FavoriteContext } from "./Favorites";
 import axios from "axios";
 import "../scss/components/menu.css";
@@ -200,7 +200,7 @@ export const Home: React.FC = () => {
   ));
 
   return (
-    // <FavoriteContext.Provider value={{likeItems, setLikeItems}}>
+    <FavoriteContext.Provider value={{likeItems, setLikeItems}}>
     <div>
       {status === "error" ? (
         <div>
@@ -748,6 +748,6 @@ export const Home: React.FC = () => {
         </div>
       )}
     </div>
-    // </FavoriteContext.Provider>
+   </FavoriteContext.Provider>
   );
 };

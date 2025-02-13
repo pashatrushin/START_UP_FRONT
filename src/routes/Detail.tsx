@@ -24,6 +24,7 @@ import { HiPlusSm } from "react-icons/hi";
 import { HiMinusSm } from "react-icons/hi";
 import "../scss/components/add_button.css";
 import "../scss/components/add_button.css";
+
 const typeNames = ["тонкое", "традиционное"];
 
 export type PizzaBlockProps = {
@@ -75,7 +76,7 @@ export const Detail = () => {
   };
   useEffect(() => {
     axios
-      .get(`https://api.kimchistop.ru/user/${paramss.user}/fav`)
+      .get(`https://api.skyrodev.ru/user/${paramss.user}/fav`)
       .then((e) => setLikeItems(e.data))
       .catch((error) => console.error("Error fetching favorites:", error));
   }, []);
@@ -160,7 +161,7 @@ export const Detail = () => {
   const onClickFav = () => {
     axios
       .patch(
-        `https://127.0.0.1:8000/user/${paramss.user}/fav?favourite_item=${pizza.id}`
+        `https://api.skyrodev.ru/user/${paramss.user}/fav?favourite_item=${pizza.id}`
       )
       .then((res) => {
         setLikeItems(res.data);
@@ -239,7 +240,7 @@ export const Detail = () => {
     async function fetchPizza() {
       try {
         const { data } = await axios.get(
-          `http://127.0.0.1:8000/sbis/sbis-product/${params.id}`
+          `https://api.skyrodev.ru/sbis/sbis-product/${params.id}`
         );
 
         setPizza(data);

@@ -20,7 +20,7 @@ import {
 } from "../components";
 import { setCategory, setCurrentPage, setFilters } from "../redux/filter/slice";
 import { SearchPizzaParams } from "../redux/pizza/types";
-import { store, useAppDispatch } from "../redux/store";
+import { RootState, store, useAppDispatch } from "../redux/store";
 import { selectFilter } from "../redux/filter/selectors";
 import { Category } from "../redux/filter/types";
 import { fetchPizzas } from "../redux/pizza/asyncActions";
@@ -33,23 +33,24 @@ import Error from "./Error";
 import { Link } from "react-router-dom";
 import arrow_back from "../assets/images/Arrow 5.svg";
 import { GlobalContext } from "./router";
-import { userState } from "../redux/user/slice";
+import userSlice, { setUser } from '../redux/user/slice'
 import { FavoriteContext } from "./Favorites";
-import axios from "axios";
+import axios, {AxiosRequestConfig} from "axios";
 import "../scss/components/menu.css";
 import { FaHome, FaHeart, FaSearch, FaUser } from "react-icons/fa";
 import Preloader from "./Preloader";
-
+import {User} from '../interfaces/user'
 export const Catalog: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isMounted = useRef(false);
   const userParams = useContext(GlobalContext);
   const [likeItems, setLikeItems] = useState([]);
-
+  const [userData, setUserData] = useState<User>();
   const { category, sort, currentPage, searchValue } =
     useSelector(selectFilter);
   const { items, status } = useSelector(selectPizzaData);
+  const params = useContext(GlobalContext);
 
   const onChangeCategory = React.useCallback(
     (idx: Category) => {
@@ -61,6 +62,35 @@ export const Catalog: React.FC = () => {
   const onChangePage = (page: number) => {
     dispatch(setCurrentPage(page));
   };
+
+
+  // UserOptions
+
+  const userOptions: AxiosRequestConfig = {
+    method: 'GET',
+    url: `https://api.skyrodev.ru/user/${params.user}`,
+  };
+  async function getUser () {
+    try {
+
+      const { data } = await axios.request(userOptions);
+      dispatch(setUser(data))
+      // setUserData(prevData => ({
+      //   ...prevData,
+      //   ...data
+      // }));
+      // return userData
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
+  useEffect(() => {
+    getUser();
+  }, [dispatch])
 
   const getPizzas = async () => {
     // const sortBy = sort.sortProperty.replace('-', '')
@@ -136,38 +166,38 @@ export const Catalog: React.FC = () => {
     });
   });
   // Парсим параметры при первом рендере
-  // useEffect(() => {
-  //   if (window.location.search) {
-  //     const params = qs.parse(
-  //       window.location.search.substring(1)
-  //     ) as unknown as SearchPizzaParams;
-  //     const sort = sortList.find((obj) => obj.sortProperty === params.sortBy);
-  //     const category = categoriesList.find(
-  //       (obj) => obj.id === Number(params.category)
-  //     );
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(
+        window.location.search.substring(1)
+      ) as unknown as SearchPizzaParams;
+      const sort = sortList.find((obj) => obj.sortProperty === params.sortBy);
+      const category = categoriesList.find(
+        (obj) => obj.id === Number(params.category)
+      );
 
-  //     dispatch(
-  //       setFilters({
-  //         searchValue: params.search,
-  //         category: category || categoriesList[0],
-  //         currentPage: Number(params.currentPage),
-  //         sort: sort || sortList[0],
-  //       })
-  //     );
-  //   }
+      dispatch(
+        setFilters({
+          searchValue: params.search,
+          category: category || categoriesList[0],
+          currentPage: Number(params.currentPage),
+          sort: sort || sortList[0],
+        })
+      );
+    }
     isMounted.current = true;
-  //   axios
-  //     .get(`https://127.0.0.1:8000/user/${userParams.user}/fav`)
-  //     .then((e) => {
-  //       let arr: any = [];
-  //       e.data.forEach((item: any) => {
-  //         arr.push(item);
-  //       });
-  //       setLikeItems(arr);
-  //       localStorage.setItem("likeItems", JSON.stringify(arr));
-  //     })
-  //     .catch((error) => console.error("Error fetching favorites:", error));
-  // }, [dispatch, userParams.user]);
+    axios
+      .get(`https://api.skyrodev.ru/user/${userParams.user}/fav`)
+      .then((e) => {
+        let arr: any = [];
+        e.data.forEach((item: any) => {
+          arr.push(item);
+        });
+        setLikeItems(arr);
+        localStorage.setItem("likeItems", JSON.stringify(arr));
+      })
+      .catch((error) => console.error("Error fetching favorites:", error));
+  }, [dispatch, userParams.user]);
 
   const sortedItems = [...items].sort((a: any, b: any) => a.id - b.id);
   const pizzas = sortedItems.map((obj: any) => (
@@ -179,7 +209,7 @@ export const Catalog: React.FC = () => {
   ));
 
   return (
-    // <FavoriteContext.Provider value={{likeItems, setLikeItems}}>
+    <FavoriteContext.Provider value={{likeItems, setLikeItems}}>
     <div>
       {status === "error" ? (
         <div>
@@ -263,6 +293,6 @@ export const Catalog: React.FC = () => {
         </div>
       )}
     </div>
-    // </FavoriteContext.Provider>
+    </FavoriteContext.Provider>
   );
 };

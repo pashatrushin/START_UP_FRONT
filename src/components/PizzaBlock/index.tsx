@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react";
+import React, { createContext, useContext, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartItemById } from "../../redux/cart/selectors";
@@ -12,11 +12,11 @@ import { HiPlusSm } from "react-icons/hi";
 import { HiMinusSm } from "react-icons/hi";
 import { removeItemFav } from "../../redux/favorite/favSlice";
 import { addItemFav } from "../../redux/favorite/favSlice";
-import axios from "axios";
-import qs from "qs";
 import { FavoriteContext } from "../../routes/Favorites";
 import { GlobalContext } from "../../routes/router";
 import './index.css'
+import axios, { AxiosRequestConfig } from 'axios';
+import { RootState } from "../../redux/store";
 
 type PizzaBlockProps = {
   id: string;
@@ -29,6 +29,7 @@ type PizzaBlockProps = {
   likeImageSrc: string;
   maxLength?: number;
 };
+
 export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   id = "0",
   image,
@@ -51,6 +52,8 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   const addedCount = cartItem ? cartItem.count : 0;
   const counter = cartItem ? cartItem.isCounter : false;
   const [isHeartActive, setIsHeartActive] = useState(false); ///
+
+  const user = useSelector((state: RootState)=> state.user.user)
   const onClickAdd = () => {
     const item: CartItem = {
       id,
@@ -91,13 +94,35 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       setStorageValue(`likeButton_${id}`, !isLiked);
     }
   };
-  // const onClickFav = () => {
-  //   axios.patch(`https://127.0.0.1:8000/user/${params.user}/fav?favourite_item=${id}`).then(res => {
-  //     setLikeItems(res.data)
-  //     localStorage.setItem('likeItems', JSON.stringify(res.data))
-  //   })
+  const onClickFav = () => {
+    axios.patch(`https://api.skyrodev.ru/user/${params.user}/fav?favourite_item=${id}`).then(res => {
+      setLikeItems(res.data)
+      localStorage.setItem('likeItems', JSON.stringify(res.data))
+    })
 
-  // }
+  }
+  
+  const options: AxiosRequestConfig = {
+    method: 'POST',
+    url: 'https://api.skyrodev.ru/cart/add',
+    headers: { 'Content-Type': 'application/json' },
+    data: {product_id: id, quantity: 1,user_id: user?.id}
+  };
+  
+  async function addToCart() {
+    try {
+      const { data } = await axios.request(options);
+      console.log(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
+  
+  
   const handleClick = () => {
     setIsLiked(!isLiked);
     setStorageValue(`likeButton_${id}`, !isLiked);
@@ -178,12 +203,12 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       dispatch(removeItem(id));
     }
   };
-  // const checkbutton: any = () => {
-  //   return likeItems.find((item: any) => item.id === id) ? heart_active : heart_img
-  // }
-  const checkbutton = () => {
-    return isHeartActive ? heart_active : heart_img;
-  };
+  const checkbutton: any = () => {
+    return likeItems.find((item: any) => item.id === id) ? heart_active : heart_img
+  }
+  // const checkbutton = () => {
+  //   return isHeartActive ? heart_active : heart_img;
+  // };
   React.useEffect(() => {
     localStorage.setItem("count", addedCount.toString());
     localStorage.setItem("isCounter", setIsCounter.toString());
@@ -246,7 +271,8 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
             ) : (
               <div>
                 <button
-                  onClick={handleAddToCart}
+                  // onClick={handleAddToCart}
+                  onClick={addToCart}
                   className="border-2 border-[#ABABAB] w-[99px] h-[25px] rounded-md landing-1 uppercase font-next text-[10px] font-bold text-center"
                 >
                   Добавить
@@ -254,14 +280,17 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                 </button>
               </div>
             )}
-            {/* <button onClick={onClickFav}> */}
-            {/* <button>
+            
+            {/* <button onClick={onClickFav}>
               <img
                 alt=""
                 ref={like}
                 src={checkbutton()}
                 onClick={() => {
-                  $(`.like_${id}`).attr("src", checkbutton());
+                  // $(`.like_${id}`).attr("src", checkbutton());
+                  document.querySelectorAll(`.like_${id}`).forEach(el => {
+                    el.setAttribute("src", checkbutton());
+                  });                  
                 }}
                 className={`like_${id} w-[25px] h-[25px] top-[0px] relative`}
               />
@@ -277,7 +306,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                     className="like w-[25px] h-[25px] top-[0px] relative"
                   />
                 </button> */}
-            <div className="heart-container" title="Like">
+            <div className="heart-container" title="Like" onClick={onClickFav}>
               <input type="checkbox" className="checkbox" id="Give-It-An-Id" />
               <div className="svg-container">
                 <svg

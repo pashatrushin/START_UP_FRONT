@@ -9,9 +9,20 @@ import { useContext } from "react"
 let data: FavItem[] = []
 async function getData() {
   const ls: any = localStorage.getItem('tgParams')
+  // const ls: any = {
+  //   "address": "string",
+  //   "id": 1,
+  //   "nickname": "string",
+  //   "chatID": "string",
+  //   "role": "string",
+  //   "name": "string",
+  //   "tel": "string",
+  //   "orders": "string",
+  //   "favourites": []
+  // }
   const params: any = JSON.parse(ls)
-  await axios.post(`https://127.0.0.1:8000/user/setstate?nickname=${params.user}`)
-  await axios.get(`https://127.0.0.1:8000/user/${params.user}/fav`).then(e => {
+  await axios.post(`https://api.skyrodev.ru/user/setstate?nickname=${params.user}`)
+  await axios.get(`https://api.skyrodev.ru/user/${params.user}/fav`).then(e => {
     e.data.forEach((item:any) =>{
       data.push(item)
       console.log(item)
