@@ -7,31 +7,34 @@ import { selectCart } from '../redux/cart/selectors'
 import { HiPlusSm } from "react-icons/hi"
 import { HiMinusSm } from "react-icons/hi"
 import cutlery from '../assets/images/cutlery_2.svg'
-import bus from '../assets/images/bus.svg'
-import money from '../assets/images/money_hand.svg'
-import commentImage from '../assets/images/list_items.svg'
-import promo from '../assets/images/promocode.svg'
-import arrow_back from '../assets/images/Arrow 5.svg'
+// import bus from '../assets/images/bus.svg'
+// import money from '../assets/images/money_hand.svg'
+// import commentImage from '../assets/images/list_items.svg'
+// import promo from '../assets/images/promocode.svg'
+// import arrow_back from '../assets/images/Arrow 5.svg'
 import EmptyCart from './EmptyCart'
-import axios from 'axios'
-import qs from 'qs'
+import axios, { AxiosRequestConfig } from 'axios'
+// import qs from 'qs'
 import React from 'react'
 import { GlobalContext } from './router'
-import cutlery_2 from '../assets/images/cutlery.svg'
-import ukassa from '../assets/images/ukassa.svg'
-import sbp from '../assets/images/sbp.svg'
-import cash from '../assets/images/cash.svg'
-import $ from 'jquery'
+// import cutlery_2 from '../assets/images/cutlery.svg'
+// import ukassa from '../assets/images/ukassa.svg'
+// import sbp from '../assets/images/sbp.svg'
+// import cash from '../assets/images/cash.svg'
+// import $ from 'jquery'
 import { selectComment } from '../redux/comment/selectors'
 import "jquery"
 import { useEffect } from 'react'
 import '../scss/components/promo.css'
+import { RootState } from '../redux/store'
+import { selectPizzaData } from '../redux/pizza/selectors'
+// import { url } from 'inspector'
 // import { JQuery } from 'jquery'
 
 export default function Cart({ initialCount = 1 }) {
 
   const dispatch = useDispatch()
-  const { totalCount, totalPrice, items } = useSelector(selectCart)
+  // const { totalCount, totalPrice, items } = useSelector(selectCart)
   const [userID, setUserID] = React.useState<number>()
   const [userData, setUserData] = React.useState({})
   const [promoactive, setPromoactive] = React.useState(false)
@@ -45,6 +48,10 @@ export default function Cart({ initialCount = 1 }) {
   const [promo, setPromo] = useState(""); // Состояние для ввода промокода
   const [promoError, setPromoError] = useState(""); // Состояние для ошибки
   const [promoActive, setPromoActive] = useState(false);
+  const user = useSelector((state: RootState) => state.user.user)
+  const {items, status} = useSelector(selectPizzaData)
+  const [cartItems, setCartItems] = useState([])
+    
 
   const [isLoading, setIsLoading] = useState(true);
 
@@ -59,7 +66,7 @@ export default function Cart({ initialCount = 1 }) {
   let sendData: any = {
     "number": Math.floor(Math.random() * 100000),
     "items": items,
-    "total": totalPrice,
+    // "total": totalPrice,
     "date": `${day}.${month}.${year}`,
     "address": "г. Южно-Сахалинск, ул. Мира 231/9",
     "state": "Отправлен",
@@ -67,7 +74,7 @@ export default function Cart({ initialCount = 1 }) {
     "payment": selectedOptionPay,
     "comment": comment,
     "cutlery": localStorage.getItem("spoonCount"),
-    "client": userID
+    "client": user?.id
   }
   // console.log(params, sendData)
   const onClickPromo = () => {
@@ -91,11 +98,11 @@ export default function Cart({ initialCount = 1 }) {
   const onClickPay = () => {
 
 
-    axios.post(`https://api.kimchistop.ru/order/?chatID=${params.chatID}`, sendData)
+    axios.post(`http://localhost:8000/order/?chatID=${params.chatID}`, sendData)
     dispatch(clearItems())
     // window.location.href = `https://api.kimchistop.ru/payments/?amount=${totalPrice}&number=${sendData.number}`
     const tg = Telegram.WebApp
-    tg.openLink(`https://ecom.alfabank.ru/standalone/pay/?depositFlag=1&logo=0&standalone_name=i-kimchistop65-api&currency%5B%5D=RUB&def=%7B%22name%22%3A%22amount%22%2C%22value%22%3A%22${totalPrice}%22%2C%22title%22%3A%22%D0%9E%D0%BF%D0%BB%D0%B0%D1%82%D0%B0+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0+${sendData.number}%22%7D&showcase=constructor&language=ru`)
+    // tg.openLink(`https://ecom.alfabank.ru/standalone/pay/?depositFlag=1&logo=0&standalone_name=i-kimchistop65-api&currency%5B%5D=RUB&def=%7B%22name%22%3A%22amount%22%2C%22value%22%3A%22${totalPrice}%22%2C%22title%22%3A%22%D0%9E%D0%BF%D0%BB%D0%B0%D1%82%D0%B0+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0+${sendData.number}%22%7D&showcase=constructor&language=ru`)
 
 
   }
@@ -134,12 +141,29 @@ export default function Cart({ initialCount = 1 }) {
     setPromoActive(isPromoActive);
   }, []);
 
+  const cartRequestOptions:  AxiosRequestConfig ={
+    method: "GET",
+    url: `http://localhost:8000/cart/data/${user?.id}`,
+    headers: {
+      "Content-Type": "application/json"}
+  }
+
+  async function getCart() {
+    try {
+      const response = await axios.request(cartRequestOptions)
+      setCartItems(response.data.items)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   React.useEffect(() => {
     saveToLocalStorage()
-    axios.get(`https://api.kimchistop.ru/user/${params.user}`).then(e => {
+    axios.get(`http://localhost:8000/user/${params.user}`).then(e => {
       setUserData(e.data)
       setUserID(e.data.id)
     })
+    getCart()
+    console.log(cartItems)
   }, [count])
 
   // let img = ""
@@ -151,7 +175,7 @@ export default function Cart({ initialCount = 1 }) {
 
   return (
     <div className="content">
-      {items.length > 0 ? (
+      {cartItems.length > 0 ? (
         <div className="container container--cart">
           <div className="cart pb-[7vh] h-auto">
             <div className="w-full  bg-headerNav bg-cover flex justify-center items-center">
@@ -160,7 +184,7 @@ export default function Cart({ initialCount = 1 }) {
               </h1>
             </div>
             <div className="content__items">
-              {items.map((item: any) => (
+              {cartItems.map((item: any) => (
                 <CartItem key={item.id} {...item} />
               ))}
             </div>
@@ -217,7 +241,7 @@ export default function Cart({ initialCount = 1 }) {
               <div className="fixed w-[100vw] flex flex-col items-center justify-center left-0 px-5 bottom-[125px]">
                 <div className="flex w-full justify-between px-2 py-2 bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2]">
                   <span className="uppercase font-term text-2xl"> Итого: </span>
-                  <p className="uppercase font-term text-2xl">{totalPrice} P</p>
+                  {/* <p className="uppercase font-term text-2xl">{totalPrice} P</p> */}
                 </div>
                 <div className="bg-[#F1F1F1] px-2 py-2 border-b-[1px] border-[#A2A2A2]">
                   <p className="text-[10px] font-roboto font-bold">

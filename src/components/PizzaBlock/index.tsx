@@ -95,7 +95,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     }
   };
   const onClickFav = () => {
-    axios.patch(`https://api.skyrodev.ru/user/${params.user}/fav?favourite_item=${id}`).then(res => {
+    axios.patch(`http://localhost:8000/user/${params.user}/fav?favourite_item=${id}`).then(res => {
       setLikeItems(res.data)
       localStorage.setItem('likeItems', JSON.stringify(res.data))
     })
@@ -104,7 +104,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   
   const options: AxiosRequestConfig = {
     method: 'POST',
-    url: 'https://api.skyrodev.ru/cart/add',
+    url: 'http://localhost:8000/cart/add',
     headers: { 'Content-Type': 'application/json' },
     data: {product_id: id, quantity: 1,user_id: user?.id}
   };

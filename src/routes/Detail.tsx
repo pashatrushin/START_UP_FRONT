@@ -76,7 +76,7 @@ export const Detail = () => {
   };
   useEffect(() => {
     axios
-      .get(`https://api.skyrodev.ru/user/${paramss.user}/fav`)
+      .get(`http://localhost:8000/user/${paramss.user}/fav`)
       .then((e) => setLikeItems(e.data))
       .catch((error) => console.error("Error fetching favorites:", error));
   }, []);
@@ -161,7 +161,7 @@ export const Detail = () => {
   const onClickFav = () => {
     axios
       .patch(
-        `https://api.skyrodev.ru/user/${paramss.user}/fav?favourite_item=${pizza.id}`
+        `http://localhost:8000/user/${paramss.user}/fav?favourite_item=${pizza.id}`
       )
       .then((res) => {
         setLikeItems(res.data);
@@ -240,7 +240,7 @@ export const Detail = () => {
     async function fetchPizza() {
       try {
         const { data } = await axios.get(
-          `https://api.skyrodev.ru/sbis/sbis-product/${params.id}`
+          `http://localhost:8000/sbis/sbis-product/${params.id}`
         );
 
         setPizza(data);

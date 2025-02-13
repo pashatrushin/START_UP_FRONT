@@ -46,7 +46,6 @@ export const Catalog: React.FC = () => {
   const isMounted = useRef(false);
   const userParams = useContext(GlobalContext);
   const [likeItems, setLikeItems] = useState([]);
-  const [userData, setUserData] = useState<User>();
   const { category, sort, currentPage, searchValue } =
     useSelector(selectFilter);
   const { items, status } = useSelector(selectPizzaData);
@@ -68,18 +67,13 @@ export const Catalog: React.FC = () => {
 
   const userOptions: AxiosRequestConfig = {
     method: 'GET',
-    url: `https://api.skyrodev.ru/user/${params.user}`,
+    url: `http://localhost:8000/user/${params.user}`,
   };
   async function getUser () {
     try {
 
       const { data } = await axios.request(userOptions);
       dispatch(setUser(data))
-      // setUserData(prevData => ({
-      //   ...prevData,
-      //   ...data
-      // }));
-      // return userData
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error message:', error.message);
@@ -187,7 +181,7 @@ export const Catalog: React.FC = () => {
     }
     isMounted.current = true;
     axios
-      .get(`https://api.skyrodev.ru/user/${userParams.user}/fav`)
+      .get(`http://localhost:8000/user/${userParams.user}/fav`)
       .then((e) => {
         let arr: any = [];
         e.data.forEach((item: any) => {
@@ -207,7 +201,9 @@ export const Catalog: React.FC = () => {
   const skeletons = [...new Array(4)].map((_, index) => (
     <Skeleton key={index} />
   ));
-
+React.useEffect(() => {
+  console.log(items)
+})
   return (
     <FavoriteContext.Provider value={{likeItems, setLikeItems}}>
     <div>

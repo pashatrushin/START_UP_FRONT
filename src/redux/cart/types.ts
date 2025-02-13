@@ -13,3 +13,12 @@ export interface CartSliceState {
   totalCount: number
   items: CartItem[]
 }
+export interface CartItemResponse {
+  product_id: number;
+  quantity: number;
+}
+
+export interface CartResponse {
+  items: CartItemResponse[];
+}
+

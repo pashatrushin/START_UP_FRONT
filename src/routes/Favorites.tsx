@@ -58,10 +58,10 @@ export default function Favorites() {
   const params = useContext(GlobalContext);
 
   useEffect(() => {
-    axios.post(`https://api.skyrodev.ru/user/setstate?nickname=${params.user}`)
+    axios.post(`http://localhost:8000/user/setstate?nickname=${params.user}`)
     axios
       // .get(`https://api.kimchistop.ru/user/${params.user}/fav`)
-      .get(`https://api.skyrodev.ru/user/${params.user}/fav`)
+      .get(`http://localhost:8000/user/${params.user}/fav`)
       .then((e) => setLikeItems(e.data))
       .catch((error) => console.error('Error fetching favorites:', error));
   }, [])

@@ -15,7 +15,7 @@ type CartItemProps = {
   image: string,
   name: string,
   price: number,
-  count: number,
+  quantity: number,
   description: string
 }
 
@@ -24,7 +24,7 @@ export const CartItem: React.FC<CartItemProps> = ({
   image = '',
   name = '',
   price = 0,
-  count = 0,
+  quantity = 0,
   description = ''
 }) => {
   const dispatch = useDispatch()
@@ -38,8 +38,8 @@ export const CartItem: React.FC<CartItemProps> = ({
   }
 
   const onClickMinus = () => {
-    if (count === 1) onClickRemove()
-    if (count > 1) dispatch(minusItem(id))
+    if (quantity === 1) onClickRemove()
+    if (quantity > 1) dispatch(minusItem(id))
   }
 
   const onClickRemove = () => {
@@ -67,13 +67,13 @@ export const CartItem: React.FC<CartItemProps> = ({
         </Link>
         <div className='flex items-center gap-2 mt-2'>
             <button
-              disabled={count === 0}
+              disabled={quantity === 0}
               onClick={onClickMinus}
               className='px-[2px] py-[2px] border-2 border-stone-600 rounded-full text-center'>
               {/* <MinusCartSvg /> */}
               <HiMinusSm />
             </button>
-            <b>{count}</b>
+            <b>{quantity}</b>
             <button
               onClick={onClickPlus}
               className='px-[2px] py-[2px] border-2 border-stone-600 rounded-full text-center'>
@@ -89,7 +89,7 @@ export const CartItem: React.FC<CartItemProps> = ({
           </div>
         </div>
         <div className='text-right'>
-          <b className='text-xl font-term color w-[80px] text-right text-stone-600'>{price * count} P</b>
+          <b className='text-xl font-term color w-[80px] text-right text-stone-600'>{price * quantity} P</b>
         </div>
       </div>
     </div>

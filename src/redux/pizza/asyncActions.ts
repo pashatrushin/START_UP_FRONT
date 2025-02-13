@@ -10,7 +10,7 @@ export const fetchPizzas = createAsyncThunk<Pizza[], SearchPizzaParams>(
   async (params) => {
     const {category} = params;
     //console.log(params, 4444);
-    const { data } = await axios.get<Pizza[]>(`https://api.skyrodev.ru/sbis/sbis-products`, {params: pickBy(
+    const { data } = await axios.get<Pizza[]>(`http://localhost:8000/sbis/sbis-products`, {params: pickBy(
       // api.kimchistop.ru
       {
         category,
