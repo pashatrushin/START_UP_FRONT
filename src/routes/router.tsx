@@ -67,7 +67,7 @@ export const router = createBrowserRouter([
         element: <GlobalContext.Provider value={tgParams}><Catalog /></GlobalContext.Provider>,
       },
       {
-        path: 'pizza/:id',
+        path: '/:id',
         element: <GlobalContext.Provider value={tgParams}><Detail /></GlobalContext.Provider>
       },
       {

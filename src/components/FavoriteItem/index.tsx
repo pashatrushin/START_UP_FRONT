@@ -12,7 +12,6 @@ import { useState } from 'react'
 import { removeItemFav } from '../../redux/favorite/favSlice'
 import { FavoriteContext } from '../../routes/Favorites'
 import axios from 'axios'
-import qs from 'qs'
 import { GlobalContext } from '../../routes/router'
 import { HiPlusSm } from "react-icons/hi"
 import { HiMinusSm } from "react-icons/hi"
@@ -58,7 +57,7 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
     if (addedCount > 1) dispatch(minusItem(id))
   }
   const onClickRemoveFav = () => {
-    axios.patch(`http://localhost:8000/user/${params.user}/fav?favourite_item=${id}`).then(res => {
+    axios.patch(`https://api.skyrodev.ru/user/${params.user}/fav?favourite_item=${id}`).then(res => {
       setLikeItems(res.data)
       console.log(likeItems)
     })
@@ -91,7 +90,7 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
       <div className='flex justify-between bg-[#F1F1F1] border-b-2 border-stone-700 py-2 px-2 gap-2'>
 
         <div className='flex justify-center items-center'>
-          <Link key={id} to={`/pizza/${id}`}>
+          <Link key={id} to={`/${id}`}>
             <img
               className='w-[100px] h-[90px] rounded-[20px]'
               src={image}
@@ -100,9 +99,9 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
           </Link>
         </div>
         <div className='w-[165px]'>
-          <Link key={id} to={`/pizza/${id}`} className='gap-2 flex flex-col'>
-            <h3 className='font-term text-2xl leading-4'>{name}</h3>
-            <p className='font-next text-[6px] leading-2'>{description}</p>
+          <Link key={id} to={`/${id}`} className='gap-2 flex flex-col'>
+            <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{name}</h3>
+            <p className='font-next text-[6px] leading-2 overflow-hidden whitespace-nowrap text-ellipsis'>{description}</p>
           </Link>
           {addedCount > 0 ? (
               <div className='flex gap-2 w-10 justify-between items-center 13mini:mt-2'>

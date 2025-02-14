@@ -67,7 +67,7 @@ export const Catalog: React.FC = () => {
 
   const userOptions: AxiosRequestConfig = {
     method: 'GET',
-    url: `http://localhost:8000/user/${params.user}`,
+    url: `https://api.skyrodev.ru/user/${params.user}`,
   };
   async function getUser () {
     try {
@@ -180,17 +180,17 @@ export const Catalog: React.FC = () => {
       );
     }
     isMounted.current = true;
-    axios
-      .get(`http://localhost:8000/user/${userParams.user}/fav`)
-      .then((e) => {
-        let arr: any = [];
-        e.data.forEach((item: any) => {
-          arr.push(item);
-        });
-        setLikeItems(arr);
-        localStorage.setItem("likeItems", JSON.stringify(arr));
-      })
-      .catch((error) => console.error("Error fetching favorites:", error));
+    // axios
+    //   .get(`https://api.skyrodev.ru/user/${userParams.user}/fav`)
+    //   .then((e) => {
+    //     let arr: any = [];
+    //     e.data.forEach((item: any) => {
+    //       arr.push(item);
+    //     });
+    //     setLikeItems(arr);
+    //     localStorage.setItem("likeItems", JSON.stringify(arr));
+    //   })
+    //   .catch((error) => console.error("Error fetching favorites:", error));
   }, [dispatch, userParams.user]);
 
   const sortedItems = [...items].sort((a: any, b: any) => a.id - b.id);

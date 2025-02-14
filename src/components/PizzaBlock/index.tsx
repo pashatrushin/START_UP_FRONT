@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, { createContext, useContext, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartItemById } from "../../redux/cart/selectors";
 import { CartItem } from "../../redux/cart/types";
 import heart_img from "../../assets/images/heart_img.svg";
-import heart_active from "../../assets/images/heart.png";
+import heart_active from "../../assets/images/heart.svg";
 import { FavItem } from "../../redux/favorite/types_fav";
 import { addItem, minusItem, removeItem } from "../../redux/cart/slice";
 import { CartItem as CartItemType } from "../../redux/cart/types";
@@ -52,7 +52,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   const addedCount = cartItem ? cartItem.count : 0;
   const counter = cartItem ? cartItem.isCounter : false;
   const [isHeartActive, setIsHeartActive] = useState(false); ///
-
+  const [favItems, setFavItems] = useState([])
   const user = useSelector((state: RootState)=> state.user.user)
   const onClickAdd = () => {
     const item: CartItem = {
@@ -95,7 +95,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     }
   };
   const onClickFav = () => {
-    axios.patch(`http://localhost:8000/user/${params.user}/fav?favourite_item=${id}`).then(res => {
+    axios.patch(`https://api.skyrodev.ru/user/${params.user}/fav?favourite_item=${id}`).then(res => {
       setLikeItems(res.data)
       localStorage.setItem('likeItems', JSON.stringify(res.data))
     })
@@ -104,7 +104,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   
   const options: AxiosRequestConfig = {
     method: 'POST',
-    url: 'http://localhost:8000/cart/add',
+    url: 'https://api.skyrodev.ru/cart/add',
     headers: { 'Content-Type': 'application/json' },
     data: {product_id: id, quantity: 1,user_id: user?.id}
   };
@@ -121,12 +121,60 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       }
     }
   }
+
+
+  const optionsFav: AxiosRequestConfig = {
+    method: 'PATCH',
+    url: 'https://api.skyrodev.ru/favourites/update',
+    headers: { 'Content-Type': 'application/json' },
+    data: {product_id: id, user_id: user?.id}
+  };
   
+  async function addToFav() {
+    try {
+      const { data } = await axios.request(optionsFav);
+      console.log(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
   
+  const favRequestOptions: AxiosRequestConfig ={
+    method: "GET",
+    url: `https://api.skyrodev.ru/favourites/${user?.id}`,
+    headers: {
+      "Content-Type": "application/json"}
+  }
+
+  async function getFav() {
+    try {
+      const response = await axios.request(favRequestOptions)
+      setFavItems(response.data.items)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  const checkbutton: any = () => {
+    console.log(`item ${id}`)
+    console.log(favItems.find((item: any) => item.id === id) ? heart_active : heart_img)
+    return favItems.find((item: any) => item.id === id) ? heart_active : heart_img
+  }
+  // const likeIcon = useMemo(() => 
+  //   favItems.some((item: any) => item.id === id) ? heart_active : heart_img
+  // , [favItems, id]);
+  // const checkbutton = () => {
+  //   return isHeartActive ? heart_active : heart_img;
+  // };
   const handleClick = () => {
     setIsLiked(!isLiked);
     setStorageValue(`likeButton_${id}`, !isLiked);
   };
+
   const selectedOptionFav = localStorage.getItem("selectedOptionFav");
   const onClickAddFav = () => {
     const item_fav: FavItem = {
@@ -203,12 +251,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       dispatch(removeItem(id));
     }
   };
-  const checkbutton: any = () => {
-    return likeItems.find((item: any) => item.id === id) ? heart_active : heart_img
-  }
-  // const checkbutton = () => {
-  //   return isHeartActive ? heart_active : heart_img;
-  // };
+
   React.useEffect(() => {
     localStorage.setItem("count", addedCount.toString());
     localStorage.setItem("isCounter", setIsCounter.toString());
@@ -280,14 +323,15 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                 </button>
               </div>
             )}
-            
-            {/* <button onClick={onClickFav}>
+
+            {/* <button>
               <img
                 alt=""
                 ref={like}
                 src={checkbutton()}
                 onClick={() => {
                   // $(`.like_${id}`).attr("src", checkbutton());
+                  addToFav()
                   document.querySelectorAll(`.like_${id}`).forEach(el => {
                     el.setAttribute("src", checkbutton());
                   });                  
@@ -306,8 +350,15 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                     className="like w-[25px] h-[25px] top-[0px] relative"
                   />
                 </button> */}
-            <div className="heart-container" title="Like" onClick={onClickFav}>
-              <input type="checkbox" className="checkbox" id="Give-It-An-Id" />
+            <div className="heart-container" title="Like">
+              <input type="checkbox" className="checkbox" id="Give-It-An-Id" onClick={addToFav} />
+              {/* <input
+                type="checkbox"
+                className="checkbox"
+                id="Give-It-An-Id"
+                checked={favItems.find((item: any) => item.id === id) ? true : false}
+                onChange={() => addToFav()}
+              /> */}
               <div className="svg-container">
                 <svg
                   viewBox="0 0 24 24"

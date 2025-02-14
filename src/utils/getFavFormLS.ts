@@ -22,12 +22,12 @@ async function getData() {
   // }
   const params: any = JSON.parse(ls)
   await axios.post(`https://api.skyrodev.ru/user/setstate?nickname=${params.user}`)
-  await axios.get(`https://api.skyrodev.ru/user/${params.user}/fav`).then(e => {
-    e.data.forEach((item:any) =>{
-      data.push(item)
-      console.log(item)
-    })
-  })
+  // await axios.get(`https://api.skyrodev.ru/user/${params.user}/fav`).then(e => {
+  //   e.data.forEach((item:any) =>{
+  //     data.push(item)
+  //     console.log(item)
+  //   })
+  // })
   console.log(data)
 }
 

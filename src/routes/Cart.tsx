@@ -98,7 +98,7 @@ export default function Cart({ initialCount = 1 }) {
   const onClickPay = () => {
 
 
-    axios.post(`http://localhost:8000/order/?chatID=${params.chatID}`, sendData)
+    axios.post(`https://api.skyrodev.ru/order/?chatID=${params.chatID}`, sendData)
     dispatch(clearItems())
     // window.location.href = `https://api.kimchistop.ru/payments/?amount=${totalPrice}&number=${sendData.number}`
     const tg = Telegram.WebApp
@@ -143,7 +143,7 @@ export default function Cart({ initialCount = 1 }) {
 
   const cartRequestOptions:  AxiosRequestConfig ={
     method: "GET",
-    url: `http://localhost:8000/cart/data/${user?.id}`,
+    url: `https://api.skyrodev.ru/cart/data/${user?.id}`,
     headers: {
       "Content-Type": "application/json"}
   }
@@ -158,7 +158,7 @@ export default function Cart({ initialCount = 1 }) {
   }
   React.useEffect(() => {
     saveToLocalStorage()
-    axios.get(`http://localhost:8000/user/${params.user}`).then(e => {
+    axios.get(`https://api.skyrodev.ru/user/${params.user}`).then(e => {
       setUserData(e.data)
       setUserID(e.data.id)
     })

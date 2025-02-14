@@ -44,31 +44,72 @@ import { FavoriteItem } from '../components/FavoriteItem';
 import arrow_back from '../assets/images/Arrow 5.svg'
 import { createContext, useContext, useEffect, useState } from 'react';
 import qs from 'qs';
-import axios from 'axios';
 import { GlobalContext } from './router';
 import EmptyFav from './EmptyFav';
 import { Detail } from './Detail';
-
-
+import axios, { AxiosRequestConfig } from 'axios'
+import { useSelector } from 'react-redux';
+import { RootState } from '../redux/store';
+import { selectPizzaData } from "../redux/pizza/selectors";
+import { Pizza } from '../redux/pizza/types';
 export const FavoriteContext = createContext<{ likeItems: any; setLikeItems: (items: any) => void }>({likeItems: [], setLikeItems: () => {}})
 
+type PizzaBlockProps = {
+  id: string;
+  image: string;
+  name: string;
+  price: number;
+  count: number;
+  description: string;
+  imageSrc: string;
+  likeImageSrc: string;
+  maxLength?: number;
+};
 export default function Favorites() {
-  const  [likeItems, setLikeItems]  = useState([]);
-
+  // const  [likeItems, setLikeItems]  = useState([]);
+  const [favItems, setFavItems] = useState<Pizza[]>([])
+  const user = useSelector((state: RootState) => state.user.user)
+  const { items, status } = useSelector(selectPizzaData);
   const params = useContext(GlobalContext);
 
-  useEffect(() => {
-    axios.post(`http://localhost:8000/user/setstate?nickname=${params.user}`)
-    axios
-      // .get(`https://api.kimchistop.ru/user/${params.user}/fav`)
-      .get(`http://localhost:8000/user/${params.user}/fav`)
-      .then((e) => setLikeItems(e.data))
-      .catch((error) => console.error('Error fetching favorites:', error));
+  // useEffect(() => {
+  //   axios.post(`https://api.skyrodev.ru/scalar/user/setstate?nickname=${params.user}`)
+  //   axios
+  //     .get(`https://api.kimchistop.ru/user/${params.user}/fav`)
+  //     .get(`https://api.skyrodev.ru/scalar/user/${params.user}/fav`)
+  //     .then((e) => setLikeItems(e.data))
+  //     .catch((error) => console.error('Error fetching favorites:', error));
+  // }, [])
+
+  const favRequestOptions: AxiosRequestConfig ={
+    method: "GET",
+    url: `https://api.skyrodev.ru/favourites/${user?.id}`,
+    headers: {
+      "Content-Type": "application/json"}
+  }
+
+  async function getFav() {
+    try {
+      const response = await axios.request(favRequestOptions);
+      const favIds = response.data.items.map((favItem: { product_id: number }) => favItem.product_id);
+  
+      // Фильтруем товары, оставляя только те, у которых id есть в избранном
+      const matchedItems = items.filter((item) => favIds.includes(item.id));
+      console.log(matchedItems)
+      setFavItems(matchedItems);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  
+
+  useEffect(()=>{
+    getFav()
   }, [])
   return (
-    <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
+    // <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
       <div className="h-full bg-white">
-      {likeItems.length > 0 ? (
+      {favItems.length > 0 ? (
         <div className="container container--cart">
           <div className="cart">
             <div className="flex w-full bg-red-600 px-3 py-5">
@@ -83,7 +124,7 @@ export default function Favorites() {
               </h1>
             </div>
             <div className="content__items">
-              {likeItems.map((item: any) => (
+              {favItems.map((item: any) => (
                 <FavoriteItem key={item.id} {...item} />
               ))}
             </div>
@@ -93,7 +134,7 @@ export default function Favorites() {
         <EmptyFav />
       )}
     </div>
-    </FavoriteContext.Provider>
+    // </FavoriteContext.Provider>
   );
 
 }
