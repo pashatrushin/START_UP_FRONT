@@ -4,30 +4,13 @@ import { Root } from './Root'
 import { Catalog } from './Catalog'
 import {Detail} from './Detail'
 import { useParams } from 'react-router-dom'
-// import { Cart } from './Cart'
-// import { Orders } from './Orders'
-// import { NotFound } from './NotFound'
-// import { ErrorPage } from './ErrorPage'
-// import { Delivery } from './Delvery'
 import { GlobalLoader } from '../components/GlobalLoader'
-// import { Cart } from './Cart';
 import { useState } from 'react'
-// import { PizzaBlock } from '../components'
 import { PizzaBlockProps } from './Detail'
 import qs from 'qs'
 import { render } from 'react-dom'
 import { FavoriteContext } from './Favorites'
 import { Home } from './Home'
-
-// const [selectedDeliveryName, setSelectedDeliveryName] = useState<string>('');
-
-// const handleSelect = (deliveryType: DeliveryType) => {
-//   const selectedOption = deliveryOptions.find((option) => option.type === deliveryType);
-//   if (selectedOption) {
-//     setSelectedDeliveryName(selectedOption.name);
-//   }
-// };
-//const Cart: React.FC = React.lazy(() => import('./Cart'))
 
 const Cart: React.FC = React.lazy(() => import(/*webpackChunkName: "Cart"*/'./Cart'))
 // const Detail: React.FC = React.lazy(() => import(/*webpackChunkName: "Detail"*/'./Detail'))

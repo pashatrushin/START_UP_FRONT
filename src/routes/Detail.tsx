@@ -192,15 +192,6 @@ export const Detail = () => {
       isCounter = false;
       localStorage.setItem("isCounter", (isCounter === false).toString());
     }
-    // isCounter = true
-    // if(count > 0){
-    //   localStorage.setItem('count', addedCount.toString())
-    //   localStorage.setItem('isCounter', (isCounter === true).toString())
-    // }
-    // else{
-    //   localStorage.setItem('count', addedCount.toString())
-    //   localStorage.setItem('isCounter', (isCounter === false).toString())
-    // }
     console.log(isCounter);
   };
   const onClickPlus = () => {
@@ -218,23 +209,6 @@ export const Detail = () => {
     }
     if (addedCount > 1) dispatch(minusItem(pizza.id));
   };
-  // useEffect(() => {
-  //   async function fetchPizza() {
-  //     try {
-  //       const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-product/${params.id}`)
-  //       // const { data } = await axios.get(`http://127.0.0.1:8000/sbis/sbis-products/${pizza.id}`)
-
-  //       setPizza(data)
-  //       setLoading(false)
-  //     } catch (error) {
-  //       setLoading(false)
-  //       alert('Ошибка при получении товара!')
-  //       navigate('/')
-  //     }
-  //   }
-  //   fetchPizza()
-  //   $(`.like_${pizza.id}`).attr('src', checkbutton)
-  // }, [])
 
   useEffect(() => {
     async function fetchPizza() {
@@ -257,19 +231,6 @@ export const Detail = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  // const onClickAddFav = () => {
-  //   const item_fav: FavItem = {
-  //     id,
-  //     foodName,
-  //     price,
-  //     image,
-  //     count: 0,
-  //     description,
-  //   }
-  //   dispatch(addItemFav(item_fav))
-  // }
-
-  // if (loading) return <GlobalLoader smalMode={false} />
 
   return (
     <div className="content">
@@ -278,7 +239,6 @@ export const Detail = () => {
           {pizza.name}
         </h1>
       </div>
-      {/* 75vh */}
       <div>
         <div className="pizza-block-wrapper">
           <div className="pizza-detail-block bg-white rounded-xl w-full">
@@ -343,7 +303,6 @@ export const Detail = () => {
               <div className="font-roboto text-l text-[14px] pl-3 text-[#5F5F5F] w-[70vw]">
                 {pizza.description}
               </div>
-              {/* <h4 className='font-term uppercase text-4xl pl-3 tracking-[5px] text-[#474747] pt-2'>{pizza.price}P</h4> */}
               <div className="flex justify-between px-3 py-3 items-center relative top-[20px]">
                 <div className="flex w-full justify-end items-center h-full">
                   <div className="flex justify-between">
@@ -391,52 +350,6 @@ export const Detail = () => {
                       </div>
                     )} */}
                   </div>
-                  {/* <img alt="" src= {checkbutton()} onClick={()=>{
-                    $(`.like_${pizza.id}`).attr('src', checkbutton())
-                  }} className={`like_${pizza.id} w-[10vw]`} /> */}
-                  {/* <img 
-                          alt="Like button" 
-                          src={checkButton} 
-                          onClick={handleLikeClick} 
-                          className={`like_${pizza.id} w-[10vw]`} 
-                        /> */}
-                  {/* <button onClick={onClickFav} className='w-full'>
-                    <div className="container">
-                      <div className="left-side">
-                        <div className="card">
-                          <div className="card-line"></div>
-                          <div className="buttons"></div>
-                        </div>
-                        <div className="post">
-                          <div className="post-line"></div>
-                          <div className="screen">
-                            <div className="dollar">$</div>
-                          </div>
-                          <div className="numbers"></div>
-                          <div className="numbers-line2"></div>
-                        </div>
-                      </div>
-                      <div className="right-side">
-                        <div className="new">New Transaction</div>
-
-                        <svg
-                          viewBox="0 0 451.846 451.847"
-                          height="512"
-                          width="512"
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="arrow"
-                        >
-                          <path
-                            fill="#cfcfcf"
-                            data-old_color="#000000"
-                            className="active-path"
-                            data-original="#000000"
-                            d="M345.441 248.292L151.154 442.573c-12.359 12.365-32.397 12.365-44.75 0-12.354-12.354-12.354-32.391 0-44.744L278.318 225.92 106.409 54.017c-12.354-12.359-12.354-32.394 0-44.748 12.354-12.359 32.391-12.359 44.75 0l194.287 194.284c6.177 6.18 9.262 14.271 9.262 22.366 0 8.099-3.091 16.196-9.267 22.373z"
-                          ></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </button> */}
                 </div>
               </div>
             </div>

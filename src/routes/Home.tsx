@@ -88,22 +88,6 @@ export const Home: React.FC = () => {
     );
     window.scrollTo(0, 0);
   };
-  // useEffect(() => {
-  //     // Инициализация Owl Carousel
-  //     $(".custom-carousel").owlCarousel({
-  //       autoWidth: true,
-  //       loop: true,
-  //     });
-
-  //     // Обработчик для кликов
-  //     $(".custom-carousel .item").on("click", function () {
-  //       $(".custom-carousel .item").not($(this)).removeClass("active");
-  //       $(this).toggleClass("active");
-  //     });
-  //   }, []);
-  // Если изменили параметры и был первый рендер
-
-  // Slider
 
   const handleNextSlide = () => {
     setCurrentIndex((prevIndex) =>
@@ -261,38 +245,6 @@ export const Home: React.FC = () => {
                         </div>
                       ))}
                     </div>
-
-                    {/* Кнопки навигации */}
-                    {/* <button
-                      onClick={handlePrevSlide}
-                      className="absolute top-1/2 left-2 transform -translate-y-1/2 bg-red-500 text-white rounded-full p-2 opacity-75 hover:opacity-100"
-                    > */}
-
-                    {/* </button> */}
-                    {/* <div className="button-container">
-                        <button className="button-3d">
-                          <div className="button-top">
-                            <span className="material-icons">❮</span>
-                          </div>
-                          <div className="button-bottom"></div>
-                          <div className="button-base"></div>
-                        </button>
-                        <button className="button-3d">
-                          <div className="button-top">
-                            <span className="material-icons">❯</span>
-                          </div>
-                          <div className="button-bottom"></div>
-                          <div className="button-base"></div>
-                          &#8594;
-                        </button>
-                      </div> */}
-                    {/* <button
-                      onClick={handleNextSlide}
-                      className="absolute top-1/2 right-2 transform -translate-y-1/2 bg-red-500 text-white rounded-full p-2 opacity-75 hover:opacity-100"
-                    >
-                    </button> */}
-
-                    {/* Индикаторы */}
                     <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-2">
                       {images.map((_, index) => (
                         <div

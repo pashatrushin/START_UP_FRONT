@@ -7,29 +7,17 @@ import { selectCart } from '../redux/cart/selectors'
 import { HiPlusSm } from "react-icons/hi"
 import { HiMinusSm } from "react-icons/hi"
 import cutlery from '../assets/images/cutlery_2.svg'
-// import bus from '../assets/images/bus.svg'
-// import money from '../assets/images/money_hand.svg'
-// import commentImage from '../assets/images/list_items.svg'
-// import promo from '../assets/images/promocode.svg'
-// import arrow_back from '../assets/images/Arrow 5.svg'
 import EmptyCart from './EmptyCart'
 import axios, { AxiosRequestConfig } from 'axios'
-// import qs from 'qs'
 import React from 'react'
 import { GlobalContext } from './router'
-// import cutlery_2 from '../assets/images/cutlery.svg'
-// import ukassa from '../assets/images/ukassa.svg'
-// import sbp from '../assets/images/sbp.svg'
-// import cash from '../assets/images/cash.svg'
-// import $ from 'jquery'
 import { selectComment } from '../redux/comment/selectors'
 import "jquery"
 import { useEffect } from 'react'
 import '../scss/components/promo.css'
 import { RootState } from '../redux/store'
 import { selectPizzaData } from '../redux/pizza/selectors'
-// import { url } from 'inspector'
-// import { JQuery } from 'jquery'
+import userSlice, { setUser } from '../redux/user/slice'
 
 export default function Cart({ initialCount = 1 }) {
 
@@ -55,7 +43,6 @@ export default function Cart({ initialCount = 1 }) {
 
   const [isLoading, setIsLoading] = useState(true);
 
-  // Эффект для скрытия прелоудера через 5 секунд
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false); // Скрываем прелоудер
@@ -76,7 +63,6 @@ export default function Cart({ initialCount = 1 }) {
     "cutlery": localStorage.getItem("spoonCount"),
     "client": user?.id
   }
-  // console.log(params, sendData)
   const onClickPromo = () => {
     if (promo === "") {
       setPromoError("Введите промокод");
@@ -128,7 +114,6 @@ export default function Cart({ initialCount = 1 }) {
     }
   }
   useEffect(() => {
-    // Проверка localStorage при загрузке компонента
     const promoStatus = localStorage.getItem("promocode");
 
     if (!promoStatus) {
@@ -137,9 +122,26 @@ export default function Cart({ initialCount = 1 }) {
 
     const isPromoActive = localStorage.getItem("promocode") === "true";
 
-    // Обновление состояния React
     setPromoActive(isPromoActive);
   }, []);
+
+  const userOptions: AxiosRequestConfig = {
+    method: 'GET',
+    url: `https://api.skyrodev.ru/user/${params.user}`,
+  };
+  async function getUser () {
+    try {
+
+      const { data } = await axios.request(userOptions);
+      dispatch(setUser(data))
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
 
   const cartRequestOptions:  AxiosRequestConfig ={
     method: "GET",
@@ -156,22 +158,19 @@ export default function Cart({ initialCount = 1 }) {
       console.error(error)
     }
   }
+
+
+
   React.useEffect(() => {
     saveToLocalStorage()
     axios.get(`https://api.skyrodev.ru/user/${params.user}`).then(e => {
       setUserData(e.data)
       setUserID(e.data.id)
     })
+    getUser();
     getCart()
     console.log(cartItems)
   }, [count])
-
-  // let img = ""
-  // if(selectedOption === "ДОСТАВКА"){
-  //   img = "../assets/images/bus.svg"
-  // } else{
-  //   img = '../assets/images/cutlery_2.svg'
-  // }
 
   return (
     <div className="content">
@@ -189,14 +188,6 @@ export default function Cart({ initialCount = 1 }) {
               ))}
             </div>
             <div className="cart__bottom">
-              {/* <div className='flex w-full justify-between px-2 py-2 bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2]'>
-                <span className='uppercase font-term text-2xl'> Итого: </span>
-                <p className='uppercase font-term text-2xl'>{totalPrice} P</p>
-              </div>
-              <div className='bg-[#F1F1F1] px-2 py-2 border-b-[1px] border-[#A2A2A2]'>
-                <p className='text-[10px] font-roboto font-bold'>Призаказе от 2000р Батат фри с пармезаном всего за 120р Для получения скидки добавьте блюдо в заказ самостоятельно его можно найти в разделе Закуски</p>
-              </div> */}
-
               <div className="flex justify-between px-2 py-2 items-center bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2] w-full">
                 <div className="flex items-center gap-2">
                   <img src={cutlery} alt="" />
@@ -224,14 +215,6 @@ export default function Cart({ initialCount = 1 }) {
               <div className='flex justify-between px-2 py-2 items-center bg-[#9e9999] border-b-[1px] border-[#A2A2A2] w-full'>
                   <input type="text" placeholder='email для отправки чека' className='w-full px-2 py-2 text-lg rounded-xl'/>
               </div>
-              {/* <div className='flex w-full justify-between px-2 py-2 bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2]'>
-                <span className='uppercase font-term text-2xl'> Итого: </span>
-                <p className='uppercase font-term text-2xl'>{totalPrice} P</p>
-              </div>
-              <div className='bg-[#F1F1F1] px-2 py-2 border-b-[1px] border-[#A2A2A2]'>
-                <p className='text-[10px] font-roboto font-bold'>Призаказе от 2000р Батат фри с пармезаном всего за 120р Для получения скидки добавьте блюдо в заказ самостоятельно его можно найти в разделе Закуски</p>
-              </div> */}
-
               <div className="flex justify-between px-2 py-4 items-center border-[#A2A2A2] promo-block">
                 <div className="input-container">
                   <input placeholder="Add Item" type="text" />
@@ -251,18 +234,6 @@ export default function Cart({ initialCount = 1 }) {
                   </p>
                 </div>
               </div>
-
-              {/* <div className="hidden flex justify-between px-2 py-4 items-center bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2] promo-actived">
-                <div className="flex items-center gap-4 ml-2">
-                  <img src={promo} alt="" />
-                  <div className="flex flex-col gap-1">
-                    <h1 className="text-lg font-term pl-2">
-                      Промокод KIMCHI10 активирован!
-                    </h1>
-                  </div>
-                </div>
-              </div> */}
-
               <div className="flex justify-between">
                 <button
                   onClick={onClickPay}

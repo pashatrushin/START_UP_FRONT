@@ -164,12 +164,6 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     console.log(favItems.find((item: any) => item.id === id) ? heart_active : heart_img)
     return favItems.find((item: any) => item.id === id) ? heart_active : heart_img
   }
-  // const likeIcon = useMemo(() => 
-  //   favItems.some((item: any) => item.id === id) ? heart_active : heart_img
-  // , [favItems, id]);
-  // const checkbutton = () => {
-  //   return isHeartActive ? heart_active : heart_img;
-  // };
   const handleClick = () => {
     setIsLiked(!isLiked);
     setStorageValue(`likeButton_${id}`, !isLiked);
@@ -187,17 +181,13 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       isCounter,
     };
     dispatch(addItemFav(item_fav));
-    // handleClick()
     setIsLiked(!isLiked);
     if (!isLiked) {
       setIsLiked(true);
-      // setStorageValue(`likeButton_${id}`, !isLiked)
     } else if (isLiked) {
       setIsLiked(false);
-      // setStorageValue(`likeButton_${id}`, isLiked)
       onClickRemoveFav();
     }
-    // handleClick()
   };
 
   const handleAddToCart = () => {
@@ -211,7 +201,6 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       isCounter,
     };
     dispatch(addItem(item));
-    // setIsCounter(true)
     if (addedCount > 0) {
       isCounter = true;
       localStorage.setItem("isCounter", (isCounter === true).toString());
@@ -219,15 +208,6 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       isCounter = false;
       localStorage.setItem("isCounter", (isCounter === false).toString());
     }
-    // isCounter = true
-    // if(count > 0){
-    //   localStorage.setItem('count', addedCount.toString())
-    //   localStorage.setItem('isCounter', (isCounter === true).toString())
-    // }
-    // else{
-    //   localStorage.setItem('count', addedCount.toString())
-    //   localStorage.setItem('isCounter', (isCounter === false).toString())
-    // }
     console.log(isCounter);
   };
   const onClickPlus = () => {
@@ -264,7 +244,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   // const truncatedText = description.split(' ').slice(0, maxLength).join(' ')
   return (
     <div className="rounded-2xl bg-white pb-3 h-[275px]">
-      <Link key={id} to={`/pizza/${id}`}>
+      <Link key={id} to={`/${id}`}>
         <img
           className="w-full h-[160px] rounded-t-2xl object-cover"
           src={image || ""}
@@ -276,16 +256,6 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
           <h4 className="text-[12px] font-term leading-4 tracking-widest overflow-hidden whitespace-nowrap text-ellipsis">
             {name}
           </h4>
-          {/* {isTruncated ? (
-            <span className='text-[5pt] leading-tight'>
-              {truncatedText}
-              {description.length > maxLength * 9 && "..."}
-            </span>
-          ) : (
-            <span className='text-[7px] leading-tight relative'>
-              {description}
-            </span>
-          )} */}
           <span className="text-[7px] leading-tight relative pizza-block-description">
             {description}
           </span>

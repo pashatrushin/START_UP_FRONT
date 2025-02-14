@@ -155,7 +155,6 @@ export const Catalog: React.FC = () => {
         const clickedTabBGColor =
           getComputedStyle(clickedTab).getPropertyValue("color");
         console.log(clickedTabBGColor);
-        // document.body.style.background = clickedTabBGColor;
       });
     });
   });
@@ -180,17 +179,6 @@ export const Catalog: React.FC = () => {
       );
     }
     isMounted.current = true;
-    // axios
-    //   .get(`https://api.skyrodev.ru/user/${userParams.user}/fav`)
-    //   .then((e) => {
-    //     let arr: any = [];
-    //     e.data.forEach((item: any) => {
-    //       arr.push(item);
-    //     });
-    //     setLikeItems(arr);
-    //     localStorage.setItem("likeItems", JSON.stringify(arr));
-    //   })
-    //   .catch((error) => console.error("Error fetching favorites:", error));
   }, [dispatch, userParams.user]);
 
   const sortedItems = [...items].sort((a: any, b: any) => a.id - b.id);
@@ -256,34 +244,8 @@ React.useEffect(() => {
               </div>
               <div className="info__wrapper"></div>
               <div className="grid grid-cols-2 gap-3 overflow-hidden overflow-y-scroll px-2 pb-[100px] pt-5">
-                {/* {status === "loading" ? skeletons : pizzas} */}
                 {status === "loading" ? <Preloader /> : pizzas}
-                {/* {<Preloader/>} */}
               </div>
-              {/* <div className="flex justify-center items-center w-[100vw] px-5 h-[20px] fixed bottom-[100px] left-0"> */}
-                {/* <div className="tab-nav-container">
-                  <div className="tab active purple">
-                    <FaHome size={20} />
-                    <a href="/favorites">
-                      <p>Главная</p>
-                    </a>
-                  </div>
-                  <div className="tab yellow">
-                    <img src={menuSvg} alt="" className="i" />
-                    <p>Меню</p>
-                  </div>
-                  <div className="tab pink">
-                    <FaHeart size={20} className="i" />
-                    <a href="/favorites">
-                      <p>Избранное</p>
-                    </a>
-                  </div>
-                  <div className="tab teal">
-                    <GiMilkCarton className="i w-[20px] h-[20px]" />
-                    <p>Корзина</p>
-                  </div>
-                </div> */}
-              {/* </div> */}
             </div>
           </div>
         </div>
