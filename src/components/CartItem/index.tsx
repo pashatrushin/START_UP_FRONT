@@ -47,7 +47,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     } else {
       setLocalQuantity((prev) => prev - 1); // 🔹 Обновляем локально
       dispatch(minusItem(id));
-      await decrementToCart(); // 🔹 Отправляем запрос в API
+      await deleteFromCart(); // 🔹 Отправляем запрос в API
     }
   };
 
@@ -133,7 +133,7 @@ export const CartItem: React.FC<CartItemProps> = ({
       </div>
       <div className='flex flex-col w-[100px] self-center items-center gap-1'>
         <div className="mt-[-30px] ml-[50px] absolute">
-          <div onClick={onClickRemove} className='border-2 border-stone-600 rounded-full px-1 py-1'>
+          <div onClick={deleteFromCart} className='border-2 border-stone-600 rounded-full px-1 py-1'>
             <RxCross2 />
           </div>
         </div>

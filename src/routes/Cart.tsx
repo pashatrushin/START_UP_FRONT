@@ -163,10 +163,10 @@ export default function Cart({ initialCount = 1 }) {
 
   React.useEffect(() => {
     saveToLocalStorage()
-    axios.get(`https://api.skyrodev.ru/user/${params.user}`).then(e => {
-      setUserData(e.data)
-      setUserID(e.data.id)
-    })
+    // axios.get(`https://api.skyrodev.ru/user/${params.user}`).then(e => {
+    //   setUserData(e.data)
+    //   setUserID(e.data.id)
+    // })
     getUser();
     getCart()
     console.log(cartItems)
@@ -213,14 +213,14 @@ export default function Cart({ initialCount = 1 }) {
                 </div>
               </div>
               <div className='flex justify-between px-2 py-2 items-center bg-[#9e9999] border-b-[1px] border-[#A2A2A2] w-full'>
-                  <input type="text" placeholder='email для отправки чека' className='w-full px-2 py-2 text-lg rounded-xl'/>
+                  <input type="text" placeholder='email для отправки чека' className='w-full px-[10px] py-[10px] text-lg rounded-xl mb-[65px]'/>
               </div>
-              <div className="flex justify-between px-2 py-4 items-center border-[#A2A2A2] promo-block">
+              {/* <div className="flex justify-between px-2 py-4 items-center border-[#A2A2A2] promo-block">
                 <div className="input-container">
                   <input placeholder="Add Item" type="text" />
                   <button className="button">Add</button>
                 </div>
-              </div>
+              </div> */}
               <div className="fixed w-[100vw] flex flex-col items-center justify-center left-0 px-5 bottom-[125px]">
                 <div className="flex w-full justify-between px-2 py-2 bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2]">
                   <span className="uppercase font-term text-2xl"> Итого: </span>

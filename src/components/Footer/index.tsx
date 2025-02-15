@@ -9,7 +9,7 @@ export const Footer: React.FC = () => {
   return (
     <div className="flex justify-center items-center w-[100vw] px-5 h-[20px] fixed bottom-[82px] left-0 z-50">
     <div className="tab-nav-container">
-      <div className="tab active purple">
+      <div className="tab purple">
         <Link to="/home">
           <FaHome size={20} />
         </Link>
@@ -17,7 +17,7 @@ export const Footer: React.FC = () => {
           <p>Главная</p>
         </a>
       </div>
-      <div className="tab yellow">
+      <div className="tab active yellow">
         {/* <FaSearch size={20} className="i" /> */}
         <Link to="/">
           <img src={menuSvg} alt="" className="i" />

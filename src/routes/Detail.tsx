@@ -4,7 +4,7 @@ import { GlobalLoader } from "../components/GlobalLoader";
 import { useSelector, useDispatch } from "react-redux";
 import PlusSvg from "../svg/PlusSvg";
 import { useParams, useNavigate } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosRequestConfig } from 'axios';
 // import { addItem } from '../redux/cart/slice'
 // import { addItemFav } from '../redux/favorite/favSlice'
 import { selectCartItemById } from "../redux/cart/selectors";
@@ -24,7 +24,7 @@ import { HiPlusSm } from "react-icons/hi";
 import { HiMinusSm } from "react-icons/hi";
 import "../scss/components/add_button.css";
 import "../scss/components/add_button.css";
-
+import { RootState } from "../redux/store";
 const typeNames = ["тонкое", "традиционное"];
 
 export type PizzaBlockProps = {
@@ -64,7 +64,7 @@ export const Detail = () => {
   );
   const counter = cartItem ? cartItem.isCounter : false;
   const addedCount = cartItem ? cartItem.count : 0;
-
+  const user = useSelector((state: RootState)=> state.user.user)
   const getStorageValue = (key: string, defaultValue: any): any => {
     try {
       const value = localStorage.getItem(key);
@@ -74,12 +74,12 @@ export const Detail = () => {
       return defaultValue;
     }
   };
-  useEffect(() => {
-    axios
-      .get(`https://api.skyrodev.ru/user/${paramss.user}/fav`)
-      .then((e) => setLikeItems(e.data))
-      .catch((error) => console.error("Error fetching favorites:", error));
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get(`https://api.skyrodev.ru/user/${paramss.user}/fav`)
+  //     .then((e) => setLikeItems(e.data))
+  //     .catch((error) => console.error("Error fetching favorites:", error));
+  // }, []);
 
   const setStorageValue = (key: string, value: any): void => {
     try {
@@ -168,11 +168,6 @@ export const Detail = () => {
         localStorage.setItem("likeItems", JSON.stringify(res.data));
       });
   };
-  const onClickRemove = () => {
-    if (window.confirm("Вы точно хотите удалить товар?")) {
-      dispatch(removeItem(pizza.id));
-    }
-  };
   const handleAddToCart = () => {
     const item: CartItem = {
       id: pizza.id,
@@ -194,12 +189,72 @@ export const Detail = () => {
     }
     console.log(isCounter);
   };
+
+
+  const options: AxiosRequestConfig = {
+    method: 'POST',
+    url: 'https://api.skyrodev.ru/cart/add',
+    headers: { 'Content-Type': 'application/json' },
+    data: {product_id: pizza.id, quantity: 1,user_id: user?.id}
+  };
+  
+  async function addToCart() {
+    try {
+      const { data } = await axios.request(options);
+      console.log(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
+
+  const decrementToCart = async () => {
+    try {
+      await axios.request({
+        method: 'POST',
+        url: 'https://api.skyrodev.ru/cart/add',
+        headers: { 'Content-Type': 'application/json' },
+        data: { product_id: pizza.id, quantity: -1, user_id: user?.id },
+      });
+    } catch (error) {
+      console.error('Ошибка при добавлении товара:', error);
+    }
+  };
+
+  const optionsDelete: AxiosRequestConfig = {
+    method: 'DELETE',
+    url: 'https://api.skyrodev.ru/cart/delete',
+    params: {product_id: pizza.id ,user_id: user?.id}
+  };
+
+  async function deleteFromCart () {
+    try {
+      const { data } = await axios.request(optionsDelete);
+      console.log(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
+  const onClickRemove = () => {
+    if (window.confirm("Вы точно хотите удалить товар?")) {
+      dispatch(removeItem(pizza.id));
+    }
+    deleteFromCart();
+  };
   const onClickPlus = () => {
     dispatch(
       addItem({
         id: pizza.id,
       } as CartItemType)
     );
+    addToCart();
   };
 
   const onClickMinus = () => {
@@ -208,6 +263,7 @@ export const Detail = () => {
       setIsCounter(false);
     }
     if (addedCount > 1) dispatch(minusItem(pizza.id));
+    decrementToCart();
   };
 
   useEffect(() => {

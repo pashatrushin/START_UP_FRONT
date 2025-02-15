@@ -122,6 +122,19 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     }
   }
 
+  const decrementToCart = async () => {
+    try {
+      await axios.request({
+        method: 'POST',
+        url: 'https://api.skyrodev.ru/cart/add',
+        headers: { 'Content-Type': 'application/json' },
+        data: { product_id: id, quantity: -1, user_id: user?.id },
+      });
+    } catch (error) {
+      console.error('Ошибка при добавлении товара:', error);
+    }
+  };
+
 
   const optionsFav: AxiosRequestConfig = {
     method: 'PATCH',
@@ -164,6 +177,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     console.log(favItems.find((item: any) => item.id === id) ? heart_active : heart_img)
     return favItems.find((item: any) => item.id === id) ? heart_active : heart_img
   }
+
   const handleClick = () => {
     setIsLiked(!isLiked);
     setStorageValue(`likeButton_${id}`, !isLiked);
@@ -216,6 +230,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
         id,
       } as CartItemType)
     );
+    addToCart()
   };
 
   const onClickMinus = () => {
@@ -224,12 +239,33 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       setIsCounter(false);
     }
     if (addedCount > 1) dispatch(minusItem(id));
+    decrementToCart();
   };
+
+  const optionsDelete: AxiosRequestConfig = {
+    method: 'DELETE',
+    url: 'https://api.skyrodev.ru/cart/delete',
+    params: {product_id: id ,user_id: user?.id}
+  };
+
+  async function deleteFromCart () {
+    try {
+      const { data } = await axios.request(optionsDelete);
+      console.log(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
 
   const onClickRemove = () => {
     if (window.confirm("Вы точно хотите удалить товар?")) {
       dispatch(removeItem(id));
     }
+    deleteFromCart();
   };
 
   React.useEffect(() => {

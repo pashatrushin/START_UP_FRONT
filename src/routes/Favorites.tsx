@@ -6,10 +6,11 @@ import { GlobalContext } from './router';
 import EmptyFav from './EmptyFav';
 import { Detail } from './Detail';
 import axios, { AxiosRequestConfig } from 'axios'
-import { useSelector } from 'react-redux';
 import { RootState } from '../redux/store';
 import { selectPizzaData } from "../redux/pizza/selectors";
 import { Pizza } from '../redux/pizza/types';
+import userSlice, { setUser } from '../redux/user/slice'
+import { useSelector, useDispatch } from 'react-redux'
 export const FavoriteContext = createContext<{ likeItems: any; setLikeItems: (items: any) => void }>({likeItems: [], setLikeItems: () => {}})
 
 export default function Favorites() {
@@ -18,7 +19,25 @@ export default function Favorites() {
   const user = useSelector((state: RootState) => state.user.user)
   const { items, status } = useSelector(selectPizzaData);
   const params = useContext(GlobalContext);
+  const dispatch = useDispatch()
 
+  const userOptions: AxiosRequestConfig = {
+    method: 'GET',
+    url: `https://api.skyrodev.ru/user/${params.user}`,
+  };
+  async function getUser () {
+    try {
+
+      const { data } = await axios.request(userOptions);
+      dispatch(setUser(data))
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
 
   const favRequestOptions: AxiosRequestConfig ={
     method: "GET",
@@ -46,6 +65,7 @@ export default function Favorites() {
     getFav()
   }, [])
   return (
+    // <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
       <div className="h-full bg-white">
       {favItems.length > 0 ? (
         <div className="container container--cart">

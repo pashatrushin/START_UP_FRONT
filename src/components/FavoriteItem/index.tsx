@@ -11,10 +11,12 @@ import { useSelector } from 'react-redux'
 import { useState } from 'react'
 import { removeItemFav } from '../../redux/favorite/favSlice'
 import { FavoriteContext } from '../../routes/Favorites'
-import axios from 'axios'
+import axios, { AxiosRequestConfig } from 'axios';
+
 import { GlobalContext } from '../../routes/router'
 import { HiPlusSm } from "react-icons/hi"
 import { HiMinusSm } from "react-icons/hi"
+import { RootState } from '../../redux/store'
 
 type FavoriteItemProps = {
   id: string,
@@ -39,6 +41,7 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
   const [isCounter, setIsCounter] = useState(localStorage.getItem('isCounter') === 'true')
   const addedCount2 = cartItem2 ? cartItem2.count: 0
   const params = useContext(GlobalContext);
+  const user = useSelector((state: RootState)=> state.user.user)
 
   const onClickPlus = () => {
     dispatch(
@@ -65,6 +68,26 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
   const onClickRemove = () => {
     if (window.confirm('Вы точно хотите удалить товар?')) {
       dispatch(removeItem(id))
+    }
+  }
+
+  const optionsFav: AxiosRequestConfig = {
+    method: 'PATCH',
+    url: 'https://api.skyrodev.ru/favourites/update',
+    headers: { 'Content-Type': 'application/json' },
+    data: {product_id: id, user_id: user?.id}
+  };
+  
+  async function addToFav() {
+    try {
+      const { data } = await axios.request(optionsFav);
+      console.log(data);
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
     }
   }
   const handleAddToCart = () => {
@@ -124,7 +147,7 @@ export const FavoriteItem: React.FC<FavoriteItemProps> = ({
           <div className='text-right'>
             <b className='text-xl font-term color w-[80px] text-right text-stone-600'>{price}P</b>
           </div>
-          <div onClick={onClickRemoveFav} className='border-2 border-stone-600 rounded-full px-1 py-1'>
+          <div onClick={addToFav} className='border-2 border-stone-600 rounded-full px-1 py-1'>
             <div className=''><RxCross2 /></div>
           </div>
         </div>
