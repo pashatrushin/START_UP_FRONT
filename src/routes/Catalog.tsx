@@ -82,6 +82,7 @@ export const Catalog: React.FC = () => {
       }
     }
   }
+
   useEffect(() => {
     getUser();
   }, [dispatch])

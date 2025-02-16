@@ -158,16 +158,16 @@ export const Detail = () => {
     };
     dispatch(addItem(item_fav));
   };
-  const onClickFav = () => {
-    axios
-      .patch(
-        `https://api.skyrodev.ru/user/${paramss.user}/fav?favourite_item=${pizza.id}`
-      )
-      .then((res) => {
-        setLikeItems(res.data);
-        localStorage.setItem("likeItems", JSON.stringify(res.data));
-      });
-  };
+  // const onClickFav = () => {
+  //   axios
+  //     .patch(
+  //       `https://api.skyrodev.ru/user/${paramss.user}/fav?favourite_item=${pizza.id}`
+  //     )
+  //     .then((res) => {
+  //       setLikeItems(res.data);
+  //       localStorage.setItem("likeItems", JSON.stringify(res.data));
+  //     });
+  // };
   const handleAddToCart = () => {
     const item: CartItem = {
       id: pizza.id,
@@ -266,6 +266,32 @@ export const Detail = () => {
     decrementToCart();
   };
 
+
+  const optionsFav: AxiosRequestConfig = {
+    method: 'PATCH',
+    url: 'https://api.skyrodev.ru/favourites/update',
+    headers: { 'Content-Type': 'application/json' },
+    data: {product_id: pizza.id, user_id: user?.id}
+  };
+  async function addToFav() {
+    try {
+      const { data } = await axios.request(optionsFav);
+      setLikeItems(data);
+      localStorage.setItem("likeItems", JSON.stringify(data));
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Error message:', error.message);
+      } else {
+        console.error('Unexpected error:', error);
+      }
+    }
+  }
+
+  const onClickFav = () => {
+    setIsLiked(!isLiked);
+    localStorage.setItem(`likeButton_${pizza.id}`, JSON.stringify(!isLiked));
+    addToFav();
+  };
   useEffect(() => {
     async function fetchPizza() {
       try {
@@ -305,14 +331,13 @@ export const Detail = () => {
                   src={pizza.image}
                   alt="Food"
                 />
-                <div className="before w-14 h-14 absolute top-5 right-5 bg-transparent rounded-full border-2 border-white px-2 py-2">
-                  <div className="w-full h-full flex justify-center items-center">
-                    <div className="heart-container" title="Like">
-                      <input
-                        type="checkbox"
-                        className="checkbox"
-                        id="Give-It-An-Id"
-                      />
+                {/* <div className="before w-14 h-14 absolute top-5 right-5 bg-transparent rounded-full border-2 border-white px-2 py-2"> */}
+                  {/* <div className="w-full h-full flex justify-center items-center"> */}
+                    {/* <div className="heart-container" title="Like">
+                      <input type="checkbox" className="checkbox" checked={isLiked} id="Give-It-An-Id"     onChange={() => {
+                          onClickFav();
+                          setIsLiked(!isLiked); // обновление состояния isLiked при каждом клике
+                        }} />
                       <div className="svg-container">
                         <svg
                           viewBox="0 0 24 24"
@@ -342,9 +367,9 @@ export const Detail = () => {
                           <polygon points="80,80 70,70"></polygon>
                         </svg>
                       </div>
-                    </div>
-                  </div>
-                </div>
+                    </div> */}
+                  {/* </div> */}
+                {/* </div> */}
               </div>
             </div>
             <div className="bg-white rounded-t-2xl top-[-30px] relative">
@@ -410,7 +435,7 @@ export const Detail = () => {
               </div>
             </div>
           </div>
-          <button onClick={handleAddToCart} className="w-full px-4">
+          {/* <button onClick={handleAddToCart} className="w-full px-4">
             <div className="container_button">
               <div className="left-side">
                 <div className="card_button">
@@ -446,7 +471,7 @@ export const Detail = () => {
                 </svg>
               </div>
             </div>
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

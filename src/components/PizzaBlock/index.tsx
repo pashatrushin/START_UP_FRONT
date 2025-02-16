@@ -17,6 +17,7 @@ import { GlobalContext } from "../../routes/router";
 import './index.css'
 import axios, { AxiosRequestConfig } from 'axios';
 import { RootState } from "../../redux/store";
+import { selectPizzaData } from "../../redux/pizza/selectors";
 
 type PizzaBlockProps = {
   id: string;
@@ -42,8 +43,8 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   const like = useRef(null);
   const dispatch = useDispatch();
   const { likeItems, setLikeItems } = useContext(FavoriteContext);
-  const [items, setItems] = useState([]);
-
+  // const [items, setItems] = useState([]);
+  // const [favItems, setFavItems] = useState<Pizza[]>([])
   const cartItem = useSelector(selectCartItemById(id));
   const params = useContext(GlobalContext);
   var [isCounter, setIsCounter] = useState(
@@ -52,8 +53,9 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   const addedCount = cartItem ? cartItem.count : 0;
   const counter = cartItem ? cartItem.isCounter : false;
   const [isHeartActive, setIsHeartActive] = useState(false); ///
-  const [favItems, setFavItems] = useState([])
+  // const [favItems, setFavItems] = useState<Pizza[]>([])
   const user = useSelector((state: RootState)=> state.user.user)
+  const { items, status } = useSelector(selectPizzaData);
   const onClickAdd = () => {
     const item: CartItem = {
       id,
@@ -84,9 +86,9 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       console.error(error);
     }
   };
-  const [isLiked, setIsLiked] = useState<boolean>(() =>
-    getStorageValue(`likeButton_${id}`, false)
-  );
+  // const [isLiked, setIsLiked] = useState<boolean>(() =>
+  //   getStorageValue(`likeButton_${id}`, false)
+  // );
   const onClickRemoveFav = () => {
     if (window.confirm("Вы точно хотите удалить товар из избранного?")) {
       dispatch(removeItemFav(id));
@@ -94,13 +96,16 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       setStorageValue(`likeButton_${id}`, !isLiked);
     }
   };
-  const onClickFav = () => {
-    axios.patch(`https://api.skyrodev.ru/user/${params.user}/fav?favourite_item=${id}`).then(res => {
-      setLikeItems(res.data)
-      localStorage.setItem('likeItems', JSON.stringify(res.data))
-    })
+  // const onClickFav = () => {
+  //   axios.patch(`https://api.skyrodev.ru/user/${params.user}/fav?favourite_item=${id}`).then(res => {
+  //     setLikeItems(res.data)
+  //     localStorage.setItem('likeItems', JSON.stringify(res.data))
+  //   })
 
-  }
+  // }
+  const [isLiked, setIsLiked] = useState(() => {
+    return JSON.parse(localStorage.getItem(`likeButton_${id}`) || "false");
+  });
   
   const options: AxiosRequestConfig = {
     method: 'POST',
@@ -142,11 +147,15 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     headers: { 'Content-Type': 'application/json' },
     data: {product_id: id, user_id: user?.id}
   };
-  
   async function addToFav() {
     try {
       const { data } = await axios.request(optionsFav);
-      console.log(data);
+      // console.log(data.items[0].product_id);
+      // console.log(optionsFav.data["product_id"])
+      // setLikeItems(optionsFav.data["product_id"]);
+      // console.log(likeItems);
+      setLikeItems(data);
+      localStorage.setItem("likeItems", JSON.stringify(data));
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error message:', error.message);
@@ -156,27 +165,18 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     }
   }
   
-  const favRequestOptions: AxiosRequestConfig ={
-    method: "GET",
-    url: `https://api.skyrodev.ru/favourites/${user?.id}`,
-    headers: {
-      "Content-Type": "application/json"}
-  }
 
-  async function getFav() {
-    try {
-      const response = await axios.request(favRequestOptions)
-      setFavItems(response.data.items)
-    } catch (error) {
-      console.error(error)
-    }
-  }
+  const onClickFav = () => {
+    setIsLiked(!isLiked);
+    localStorage.setItem(`likeButton_${id}`, JSON.stringify(!isLiked));
+    addToFav();
+  };
 
-  const checkbutton: any = () => {
-    console.log(`item ${id}`)
-    console.log(favItems.find((item: any) => item.id === id) ? heart_active : heart_img)
-    return favItems.find((item: any) => item.id === id) ? heart_active : heart_img
-  }
+  // const checkbutton: any = () => {
+  //   console.log(`item ${id}`)
+  //   console.log(favItems.find((item: any) => item.id === id) ? heart_active : heart_img)
+  //   return favItems.find((item: any) => item.id === id) ? heart_active : heart_img
+  // }
 
   const handleClick = () => {
     setIsLiked(!isLiked);
@@ -244,7 +244,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
 
   const optionsDelete: AxiosRequestConfig = {
     method: 'DELETE',
-    url: 'https://api.skyrodev.ru/cart/delete',
+    url: 'https://api.skyrodev.ru/docs/cart/delete',
     params: {product_id: id ,user_id: user?.id}
   };
 
@@ -357,7 +357,10 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                   />
                 </button> */}
             <div className="heart-container" title="Like">
-              <input type="checkbox" className="checkbox" id="Give-It-An-Id" onClick={addToFav} />
+              <input type="checkbox" className="checkbox" checked={isLiked} id="Give-It-An-Id"     onChange={() => {
+      onClickFav();
+      setIsLiked(!isLiked); // обновление состояния isLiked при каждом клике
+    }} />
               {/* <input
                 type="checkbox"
                 className="checkbox"

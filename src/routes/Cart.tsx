@@ -39,6 +39,7 @@ export default function Cart({ initialCount = 1 }) {
   const user = useSelector((state: RootState) => state.user.user)
   const {items, status} = useSelector(selectPizzaData)
   const [cartItems, setCartItems] = useState([])
+  const [TotalPrice, setTotalPrice] = useState(0)
     
 
   const [isLoading, setIsLoading] = useState(true);
@@ -159,6 +160,16 @@ export default function Cart({ initialCount = 1 }) {
     }
   }
 
+  async function getCartTotalPrice() {
+    try {
+      const response = await axios.request(cartRequestOptions)
+      setTotalPrice(response.data.totalPrice)
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+
 
 
   React.useEffect(() => {
@@ -168,7 +179,8 @@ export default function Cart({ initialCount = 1 }) {
     //   setUserID(e.data.id)
     // })
     getUser();
-    getCart()
+    getCart();
+    getCartTotalPrice()
     console.log(cartItems)
   }, [count])
 
@@ -224,7 +236,7 @@ export default function Cart({ initialCount = 1 }) {
               <div className="fixed w-[100vw] flex flex-col items-center justify-center left-0 px-5 bottom-[125px]">
                 <div className="flex w-full justify-between px-2 py-2 bg-[#F1F1F1] border-b-[1px] border-[#A2A2A2]">
                   <span className="uppercase font-term text-2xl"> Итого: </span>
-                  {/* <p className="uppercase font-term text-2xl">{totalPrice} P</p> */}
+                  <p className="uppercase font-term text-2xl">{TotalPrice} P</p>
                 </div>
                 <div className="bg-[#F1F1F1] px-2 py-2 border-b-[1px] border-[#A2A2A2]">
                   <p className="text-[10px] font-roboto font-bold">

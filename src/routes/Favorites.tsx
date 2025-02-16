@@ -62,7 +62,8 @@ export default function Favorites() {
   
 
   useEffect(()=>{
-    getFav()
+    getUser();
+    getFav();
   }, [])
   return (
     // <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
