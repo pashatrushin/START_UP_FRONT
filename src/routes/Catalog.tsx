@@ -40,12 +40,33 @@ import "../scss/components/menu.css";
 import { FaHome, FaHeart, FaSearch, FaUser } from "react-icons/fa";
 import Preloader from "./Preloader";
 import {User} from '../interfaces/user'
+import Categories from "./Categories";
+
+const categoriesList2 = [
+  { id: 0, name: 'Популярное' },
+  { id: 2506, name: 'Говядина' },
+  { id: 2424, name: 'Морепродукты' },
+  { id: 2425, name: 'Без мяса' },
+  { id: 2426, name: 'Свинина острая' },
+  { id: 2427, name: 'Свинина неострая' },
+  { id: 2424, name: 'Супы' },
+  { id: 2516, name: 'Сосиски' },
+  { id: 2465, name: 'Фри' },
+  { id: 2423, name: 'Курица' },
+  { id: 2552, name: 'Добавки' },
+  { id: 2441, name: 'Соусы' },
+  { id: 2475, name: 'Бар' },
+  { id: 2528, name: 'Холодильник' },
+  { id: 2476, name: 'Десерты' },
+]
 export const Catalog: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const isMounted = useRef(false);
   const userParams = useContext(GlobalContext);
   const [likeItems, setLikeItems] = useState([]);
+  const [categories, setCategories] = useState<{ id: number; name: string }[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const { category, sort, currentPage, searchValue } =
     useSelector(selectFilter);
   const { items, status } = useSelector(selectPizzaData);
@@ -182,76 +203,92 @@ export const Catalog: React.FC = () => {
     isMounted.current = true;
   }, [dispatch, userParams.user]);
 
-  const sortedItems = [...items].sort((a: any, b: any) => a.id - b.id);
+  const filteredItems = selectedCategory
+  ? items.filter((item) => item.category === selectedCategory)
+  : items;
+
+// Сортируем: сначала категории с большим id, потом с меньшим
+  const sortedItems = [...filteredItems].sort((a: any, b: any) => a.id - b.id);
+
   const pizzas = sortedItems.map((obj: any) => (
     <PizzaBlock key={obj.id} {...obj} />
   ));
+
   // const pizzas = items.map((obj: any) => <PizzaBlock key={obj.id} {...obj} />)
   const skeletons = [...new Array(4)].map((_, index) => (
     <Skeleton key={index} />
   ));
 React.useEffect(() => {
-  console.log(items)
+  // console.log(items)
+  items.map((item)=>{
+    if(item.category == 2506)
+      console.log(item)
+  })
 })
   return (
-    <FavoriteContext.Provider value={{likeItems, setLikeItems}}>
-    <div>
-      {status === "error" ? (
-        <div>
+    <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
+      <div>
+        {status === "error" ? (
           <div>
-            <div className="flex w-full  bg-red-600 px-3 py-5">
-              <Link
-                to={`/`}
-                className="font-bold flex justify-between gap-1 items-center px-[10px] py-1 w-auto"
-              >
-                <img src={arrow_back} alt="" className="h-5 absolute" />
-              </Link>
-              <h1 className="text-white font-term text-2xl w-full text-center tracking-[5px] leading-5">
-                ОШИБКА
-              </h1>
-            </div>
             <div>
-              <div className="container">
-                <Error />
+              <div className="flex w-full  bg-red-600 px-3 py-5">
+                <Link
+                  to={`/`}
+                  className="font-bold flex justify-between gap-1 items-center px-[10px] py-1 w-auto"
+                >
+                  <img src={arrow_back} alt="" className="h-5 absolute" />
+                </Link>
+                <h1 className="text-white font-term text-2xl w-full text-center tracking-[5px] leading-5">
+                  ОШИБКА
+                </h1>
+              </div>
+              <div>
+                <div className="container">
+                  <Error />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      ) : (
-        <div>
+        ) : (
           <div>
-            <div className="w-full  bg-headerNav bg-cover flex justify-center items-center">
-              <h1 className="text-white font-term text-2xl w-full text-center tracking-[5px] leading-5 px-5 py-5">
-                МЕНЮ
-              </h1>
-            </div>
-            <div className="warning text-center px-2 py-[0px] bg-white">
-              <h1 className="font-term kor_love text-[12px] pt-[5px]">
-                ВНИМЕНИЕ ЛЮБИТЕЛЯМ КОРЕЙСКОЙ ЕДЫ!
-              </h1>
-              <p className="mt-2 font-sans font-medium text-[11.5px]  top-[-3px] relative">
-                Адрес навынос: г. Южно-Сахалинск, ул. Мира 231/9
-              </p>
-              <p className="font-sans font-medium text-[11.5px] top-[-5px] relative">
-                Принимаем заказы: ежедневно с 10:00 до 21:30
-              </p>
-            </div>
-            <div className="container">
-              <div className="content__top">
-                <Сategories
+            <div>
+              <div className="w-full  bg-headerNav bg-cover flex justify-center items-center">
+                <h1 className="text-white font-term text-2xl w-full text-center tracking-[5px] leading-5 px-5 py-5">
+                  МЕНЮ
+                </h1>
+              </div>
+              <div className="warning text-center px-2 py-[0px] bg-white">
+                <h1 className="font-term kor_love text-[12px] pt-[5px]">
+                  ВНИМЕНИЕ ЛЮБИТЕЛЯМ КОРЕЙСКОЙ ЕДЫ!
+                </h1>
+                <p className="mt-2 font-sans font-medium text-[11.5px]  top-[-3px] relative">
+                  Адрес навынос: г. Южно-Сахалинск, ул. Мира 231/9
+                </p>
+                <p className="font-sans font-medium text-[11.5px] top-[-5px] relative">
+                  Принимаем заказы: ежедневно с 10:00 до 21:30
+                </p>
+              </div>
+              <div className="container">
+                <div className="content__top">
+                  {/* <Сategories
                   value={category}
                   onChangeCategory={onChangeCategory}
-                />
-              </div>
-              <div className="info__wrapper"></div>
-              <div className="grid grid-cols-2 gap-3 overflow-hidden overflow-y-scroll px-2 pb-[100px] pt-5">
-                {status === "loading" ? <Preloader /> : pizzas}
+                /> */}
+                  <Categories
+                    categories={categoriesList2}
+                    selectedCategory={selectedCategory || 0}
+                    onSelectCategory={setSelectedCategory}
+                  />
+                </div>
+                <div className="info__wrapper"></div>
+                <div className="grid grid-cols-2 gap-3 overflow-hidden overflow-y-scroll px-2 pb-[100px] pt-5">
+                  {status === "loading" ? <Preloader /> : pizzas}
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      )}
-    </div>
+        )}
+      </div>
     </FavoriteContext.Provider>
   );
 };

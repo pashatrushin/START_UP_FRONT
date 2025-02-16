@@ -29,6 +29,7 @@ type PizzaBlockProps = {
   imageSrc: string;
   likeImageSrc: string;
   maxLength?: number;
+  category: number
 };
 
 export const PizzaBlock: React.FC<PizzaBlockProps> = ({
@@ -39,6 +40,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   count = 0,
   description = "",
   maxLength = 9,
+  category = 0,
 }) => {
   const like = useRef(null);
   const dispatch = useDispatch();

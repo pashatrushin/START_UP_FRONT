@@ -5,6 +5,7 @@ export type Pizza = {
   description: string;
   image: string[];
   rating: number;
+  category: number;
 };
 
 export enum Status {
