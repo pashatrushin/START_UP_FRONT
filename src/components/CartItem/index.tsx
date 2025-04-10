@@ -12,6 +12,8 @@ import { RxCross2 } from "react-icons/rx"
 import '../../scss/components/cart_item.css'
 import axios, { AxiosRequestConfig } from 'axios';
 import { RootState } from '../../redux/store'
+import { API_BASE_URL } from '../../config/apiConfig'
+// import { count } from 'console'
 type CartItemProps = {
   id: string,
   image: string,
@@ -47,6 +49,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     } else {
       setLocalQuantity((prev) => prev - 1); // 🔹 Обновляем локально
       dispatch(minusItem(id));
+      decrementToCart();
       await deleteFromCart(); // 🔹 Отправляем запрос в API
     }
   };
@@ -61,8 +64,9 @@ export const CartItem: React.FC<CartItemProps> = ({
 
   const options: AxiosRequestConfig = {
     method: 'DELETE',
-    url: 'https://api.skyrodev.ru/cart/delete',
-    params: {product_id: id ,user_id: user?.id}
+    url: `${API_BASE_URL}/cart/remove`,
+    params: {product_id: id ,user_id: user?.id, quantity: 0},
+    headers: { 'Content-Type': 'application/json' },
   };
 
   async function deleteFromCart () {
@@ -79,29 +83,33 @@ export const CartItem: React.FC<CartItemProps> = ({
   }
 
   const addToCart = async () => {
+    const requestData = { product_id: Number(id), quantity: 1, user_id: user?.id };
+    console.log('addToCart requestData:', requestData);
     try {
       await axios.request({
         method: 'POST',
-        url: 'https://api.skyrodev.ru/cart/add',
+        url: `${API_BASE_URL}/cart/add`,
         headers: { 'Content-Type': 'application/json' },
-        data: { product_id: id, quantity: 1, user_id: user?.id },
+        data: requestData,
       });
     } catch (error) {
       console.error('Ошибка при добавлении товара:', error);
     }
   };
+
   const decrementToCart = async () => {
     try {
       await axios.request({
         method: 'POST',
-        url: 'https://api.skyrodev.ru/cart/add',
+        url: `${API_BASE_URL}/cart/add`,
         headers: { 'Content-Type': 'application/json' },
-        data: { product_id: id, quantity: -1, user_id: user?.id },
+        data: { product_id: Number(id), quantity: -1, user_id: user?.id },
       });
     } catch (error) {
-      console.error('Ошибка при добавлении товара:', error);
+      console.error('Ошибка при уменьшении количества товара:', error);
     }
   };
+
   return (
     <div className='flex justify-between bg-[#F1F1F1] border-[1px] border-[#A2A2A2] py-2 px-2 gap-2'>
       <div className='flex justify-center items-center'>

@@ -39,7 +39,7 @@ export default function Cart({ initialCount = 1 }) {
   const [promoActive, setPromoActive] = useState(false);
   const user = useSelector((state: RootState) => state.user.user)
   const {items, status} = useSelector(selectPizzaData)
-  const [cartItems, setCartItems] = useState([])
+  const [cartItems, setCartItems] = useState<any[]>([])
   const [TotalPrice, setTotalPrice] = useState(0)
     
 
@@ -152,15 +152,30 @@ export default function Cart({ initialCount = 1 }) {
 
   async function getCart() {
     try {
-      const response = await axios.request(cartRequestOptions)
-      setCartItems(response.data.cart)
+      const response = await axios.request(cartRequestOptions);
+      let cart = response.data.cart;
+      let cartData: any[] = [];
+
+      if (Array.isArray(cart)) {
+        // Если пришёл массив, осуществляем обычное мапирование
+        cartData = cart.map((item: any) =>
+          typeof item === 'number' ? { id: item.toString(), quantity: 1 } : item
+        );
+      } else if (typeof cart === 'object' && cart !== null) {
+        // Преобразуем объект { [productId]: quantity } в массив объектов
+        cartData = Object.keys(cart).map((key) => ({
+          id: key,
+          quantity: cart[key],
+        }));
+      } else {
+        console.warn("Unexpected cart format:", cart);
+      }
+
+      setCartItems(cartData);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
   }
-  useEffect(()=>{
-    console.log(cartItems)
-  })
 
   async function getCartTotalPrice() {
     try {

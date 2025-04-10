@@ -16,7 +16,8 @@ export const Header: React.FC = () => {
   const [TotalPrice, setTotalPrice] = useState(0)
   const cartRequestOptions:  AxiosRequestConfig ={
     method: "GET",
-    url: `${API_BASE_URL}/cart/data/${user?.id}`,
+    url: `${API_BASE_URL}/cart/data`,
+    params: { user_id: user?.id },
     headers: {
       "Content-Type": "application/json"}
   }

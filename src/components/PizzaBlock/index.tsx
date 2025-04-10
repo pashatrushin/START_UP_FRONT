@@ -112,8 +112,9 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   const options: AxiosRequestConfig = {
     method: 'POST',
     url: `${API_BASE_URL}/cart/add`,
+    params: {user_id: user?.id, product_id: id, quantity: 1},
     headers: { 'Content-Type': 'application/json' },
-    data: {product_id: id, quantity: 1,user_id: user?.id}
+    // data: {product_id: id, quantity: 1,user_id: user?.id}
   };
   
   async function addToCart() {
