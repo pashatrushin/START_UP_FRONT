@@ -13,26 +13,27 @@ export const favSlice = createSlice({
   initialState,
   reducers: {
     addItemFav(state, action: PayloadAction<FavItem>) {
-      const findItem = state.items.find(obj => obj.id === action.payload.id)
+      const item: CartItem = {
+        ...action.payload,
+        quantity: 1, // Добавляем свойство quantity
+      };
+      const findItem = state.items.find((obj) => obj.id === item.id);
       if (findItem) {
-        findItem.count = 1
+        findItem.count = 1;
       } else {
-        state.items.push({
-          ...action.payload,
-          count: 0
-        })
+        state.items.push(item);
       }
-      state.totalCount = calcTotalCount(state.items)
-      state.totalPrice = calcTotalPrice(state.items)
+      state.totalCount = calcTotalCount(state.items);
+      state.totalPrice = calcTotalPrice(state.items);
     },
     removeItemFav(state, action: PayloadAction<string>) {
-      state.items = state.items.filter(obj => obj.id !== action.payload)
-      state.totalCount = calcTotalCount(state.items)
-      state.totalPrice = calcTotalPrice(state.items)
+      state.items = state.items.filter((obj) => obj.id !== action.payload);
+      state.totalCount = calcTotalCount(state.items);
+      state.totalPrice = calcTotalPrice(state.items);
     },
   },
 })
 
-export const { addItemFav, removeItemFav} = favSlice.actions
+export const { addItemFav, removeItemFav } = favSlice.actions
 
 export default favSlice.reducer

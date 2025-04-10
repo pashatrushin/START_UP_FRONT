@@ -33,13 +33,16 @@ async function getData() {
 }
 
 export const getFavFromLS = () => {
-  getData()
-  const items = data
-  const totalPrice = calcTotalPrice(items)
-  const totalCount = calcTotalCount(items)
+  getData();
+  const items = data.map((item) => ({
+    ...item,
+    quantity: item.quantity || 1, // Убедитесь, что у каждого объекта есть quantity
+  }));
+  const totalPrice = calcTotalPrice(items);
+  const totalCount = calcTotalCount(items);
   return {
     items: items as FavItem[],
     totalPrice,
     totalCount,
-  }
-}
+  };
+};

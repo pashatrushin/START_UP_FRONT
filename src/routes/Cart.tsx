@@ -186,8 +186,26 @@ export default function Cart({ initialCount = 1 }) {
     }
   }
 
-
-
+  const addToCart = async (productId: number, quantity: number = 1) => {
+    try {
+      await axios.post(
+        `${API_BASE_URL}/cart/add`,
+        {
+          user_id: user?.id,      // обязательно: убедитесь что user?.id определён
+          product_id: productId,  // id товара
+          quantity: quantity      // сколько добавляем
+        },
+        {
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+      // после успешного добавления обновляем данные корзины
+      getCart();
+      getCartTotalPrice();
+    } catch (error: any) {
+      console.error('Add to cart error:', error.message);
+    }
+  };
 
   React.useEffect(() => {
     saveToLocalStorage()
@@ -212,8 +230,14 @@ export default function Cart({ initialCount = 1 }) {
               </h1>
             </div>
             <div className="content__items">
-              {cartItems.map((item: any) => (
-                <CartItem key={item.id} {...item} />
+              {cartItems.map((item: any, index) => (
+                <CartItem
+                  key={`${item.id}-${index}`}
+                  {...item}
+                  refreshCart={(removedId: string) =>
+                    setCartItems((prev) => prev.filter((ci: any) => ci.id !== removedId))
+                  }
+                />
               ))}
             </div>
             <div className="cart__bottom">

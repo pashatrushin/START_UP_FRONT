@@ -6,6 +6,7 @@ export type FavItem = {
     count: number
     description: string
     isCounter: boolean
+    quantity: number
   }
   
   export interface FavSliceState {

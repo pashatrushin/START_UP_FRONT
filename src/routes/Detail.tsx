@@ -116,7 +116,7 @@ export const Detail = () => {
     // setStorageValue(`likeButton_${id}`, !isLiked);
   };
   const onClickAdd = () => {
-    const item = {
+    const item: CartItem = {
       id: pizza.id,
       name: pizza.name,
       description: pizza.description,
@@ -124,6 +124,7 @@ export const Detail = () => {
       image: pizza.image,
       count: pizza.count,
       isCounter: true,
+      quantity: 0
     };
     dispatch(addItem(item));
   };
@@ -155,6 +156,7 @@ export const Detail = () => {
       image: pizza.image,
       count: pizza.count,
       isCounter: true,
+      quantity: 0
     };
     dispatch(addItem(item_fav));
   };
@@ -177,6 +179,7 @@ export const Detail = () => {
       image: pizza.image,
       count: pizza.count,
       isCounter: true,
+      quantity: 0
     };
     dispatch(addItem(item));
     // setIsCounter(true)

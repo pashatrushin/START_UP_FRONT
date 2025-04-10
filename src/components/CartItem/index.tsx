@@ -1,26 +1,22 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import MinusCartSvg from '../../svg/MinusCartSvg'
-import PlusCartSvg from '../../svg/PlusCartSvg'
-import RemoveCartSvg from '../../svg/RemoveCartSvg'
 import { useDispatch, useSelector } from 'react-redux'
 import { addItem, minusItem, removeItem } from '../../redux/cart/slice'
 import { CartItem as CartItemType } from '../../redux/cart/types'
-import { HiPlusSm } from "react-icons/hi"
-import { HiMinusSm } from "react-icons/hi"
+import { HiPlusSm, HiMinusSm } from "react-icons/hi"
 import { RxCross2 } from "react-icons/rx"
-import '../../scss/components/cart_item.css'
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig } from 'axios'
 import { RootState } from '../../redux/store'
 import { API_BASE_URL } from '../../config/apiConfig'
-// import { count } from 'console'
+
 type CartItemProps = {
   id: string,
   image: string,
   name: string,
   price: number,
   quantity: number,
-  description: string
+  description: string,
+  refreshCart?: (id: string) => void
 }
 
 export const CartItem: React.FC<CartItemProps> = ({
@@ -29,50 +25,26 @@ export const CartItem: React.FC<CartItemProps> = ({
   name = '',
   price = 0,
   quantity = 0,
-  description = ''
+  description = '',
+  refreshCart,
 }) => {
   const dispatch = useDispatch();
   const user = useSelector((state: RootState) => state.user.user);
   
-  // 🔹 Локальное состояние для мгновенного обновления quantity
+  // Локальное состояние для мгновенного обновления количества
   const [localQuantity, setLocalQuantity] = useState(quantity);
 
-  const onClickPlus = async () => {
-    setLocalQuantity((prev) => prev + 1); // 🔹 Обновляем локально
-    dispatch(addItem({ id } as CartItemType));
-    await addToCart(); // 🔹 Отправляем запрос в API
-  };
-
-  const onClickMinus = async () => {
-    if (localQuantity === 1) {
-      onClickRemove();
-    } else {
-      setLocalQuantity((prev) => prev - 1); // 🔹 Обновляем локально
-      dispatch(minusItem(id));
-      decrementToCart();
-      await deleteFromCart(); // 🔹 Отправляем запрос в API
-    }
-  };
-
-  const onClickRemove = async () => {
-    if (window.confirm('Вы точно хотите удалить товар?')) {
-      setLocalQuantity(0); // 🔹 Убираем товар сразу
-      dispatch(removeItem(id));
-      await deleteFromCart(); // 🔹 Удаляем из API
-    }
-  };
-
-  const options: AxiosRequestConfig = {
-    method: 'DELETE',
-    url: `${API_BASE_URL}/cart/remove`,
-    params: {product_id: id ,user_id: user?.id, quantity: 0},
-    headers: { 'Content-Type': 'application/json' },
-  };
-
-  async function deleteFromCart () {
+  // Функция для полного удаления товара с сервера
+  async function deleteFromCart(quantityToRemove: number) {
+    const options: AxiosRequestConfig = {
+      method: 'DELETE',
+      url: `${API_BASE_URL}/cart/remove`,
+      params: { product_id: id, user_id: user?.id, quantity: quantityToRemove },
+      headers: { 'Content-Type': 'application/json' },
+    };
     try {
       const { data } = await axios.request(options);
-      console.log(data);
+      console.log("Удалено на сервере:", data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error message:', error.message);
@@ -82,43 +54,75 @@ export const CartItem: React.FC<CartItemProps> = ({
     }
   }
 
-  const addToCart = async () => {
-    const requestData = { product_id: Number(id), quantity: 1, user_id: user?.id };
-    console.log('addToCart requestData:', requestData);
-    try {
-      await axios.request({
-        method: 'POST',
-        url: `${API_BASE_URL}/cart/add`,
-        headers: { 'Content-Type': 'application/json' },
-        data: requestData,
-      });
-    } catch (error) {
-      console.error('Ошибка при добавлении товара:', error);
-    }
-  };
-
+  // Функция для уменьшения количества товара на 1 (без удаления)
   const decrementToCart = async () => {
     try {
       await axios.request({
         method: 'POST',
         url: `${API_BASE_URL}/cart/add`,
+        params: { user_id: user?.id, product_id: id, quantity: -1 },
         headers: { 'Content-Type': 'application/json' },
-        data: { product_id: Number(id), quantity: -1, user_id: user?.id },
       });
     } catch (error) {
       console.error('Ошибка при уменьшении количества товара:', error);
     }
   };
 
+  // Функция для добавления товара (увеличение на 1)
+  const addToCart = async () => {
+    if (!user?.id) {
+      console.error("Пользователь не определён");
+      return;
+    }
+    try {
+      await axios.request({
+        method: 'POST',
+        url: `${API_BASE_URL}/cart/add`,
+        params: { user_id: user?.id, product_id: id, quantity: 1 },
+        headers: { 'Content-Type': 'application/json' },
+      });
+    } catch (error) {
+      console.error("Ошибка при добавлении товара:", error);
+    }
+  };
+
+  const onClickPlus = async () => {
+    setLocalQuantity(prev => prev + 1);
+    dispatch(addItem({ id } as CartItemType));
+    await addToCart();
+  };
+
+  const onClickMinus = async () => {
+    if (localQuantity > 1) {
+      setLocalQuantity(prev => prev - 1);
+      dispatch(minusItem(id));
+      await decrementToCart();
+    } else {
+      await onClickRemove();
+    }
+  };
+
+  const onClickRemove = async () => {
+    if (window.confirm('Вы точно хотите удалить товар?')) {
+      // Мгновенно удаляем товар из UI:
+      dispatch(removeItem(id));
+      if (refreshCart) {
+        refreshCart(id);
+      }
+      // Отправляем запрос на удаление с сервера
+      await deleteFromCart(localQuantity);
+    }
+  };
+
   return (
     <div className='flex justify-between bg-[#F1F1F1] border-[1px] border-[#A2A2A2] py-2 px-2 gap-2'>
       <div className='flex justify-center items-center'>
-        <Link key={id} to={`/${id}`}>
-          <img className='w-[100px] h-[80px] rounded-[20px]' src={image} alt='Pizza' />
+        <Link to={`/${id}`}>
+          <img className='w-[100px] h-[80px] rounded-[20px]' src={image} alt='Product' />
         </Link>
       </div>
       <div className='w-[165px]'>
-        <Link key={id} to={`/${id}`} className='gap-2 flex flex-col'>
+        <Link to={`/${id}`} className='flex flex-col gap-1'>
           <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{name}</h3>
           <p className='font-next text-[6px] leading-2 overflow-hidden whitespace-nowrap text-ellipsis'>{description}</p>
         </Link>
@@ -141,7 +145,7 @@ export const CartItem: React.FC<CartItemProps> = ({
       </div>
       <div className='flex flex-col w-[100px] self-center items-center gap-1'>
         <div className="mt-[-30px] ml-[50px] absolute">
-          <div onClick={deleteFromCart} className='border-2 border-stone-600 rounded-full px-1 py-1'>
+          <div onClick={onClickRemove} className='border-2 border-stone-600 rounded-full px-1 py-1 cursor-pointer'>
             <RxCross2 />
           </div>
         </div>

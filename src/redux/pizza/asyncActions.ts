@@ -9,7 +9,7 @@ export const fetchPizzas = createAsyncThunk<Pizza[], SearchPizzaParams>(
   'pizza/fetchPizzasStatus',
   async (params) => {
     const { category } = params;
-    const { data } = await axios.get<Pizza[]>(`${API_BASE_URL}/food`, {
+    const { data } = await axios.get<Pizza[]>(`${API_BASE_URL}/food/`, {
       params: pickBy(
         {
           category,

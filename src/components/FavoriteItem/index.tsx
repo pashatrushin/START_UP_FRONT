@@ -162,7 +162,8 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
       image,
       count: 0,
       description,
-      isCounter
+      isCounter: true,
+      quantity: 1,
     }
     dispatch(addItem(item))
     setIsCounter(true)

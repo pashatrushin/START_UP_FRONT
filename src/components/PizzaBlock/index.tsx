@@ -19,7 +19,7 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { RootState } from "../../redux/store";
 import { selectPizzaData } from "../../redux/pizza/selectors";
 import { API_BASE_URL } from '../../config/apiConfig';
-type PizzaBlockProps = {
+export type PizzaBlockProps = {
   id: string;
   image: string;
   name: string;
@@ -66,7 +66,8 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       image,
       count: 0,
       description,
-      isCounter,
+      isCounter: true,
+      quantity: 1,
     };
     dispatch(addItem(item));
   };
@@ -196,6 +197,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       count: 0,
       description,
       isCounter,
+      quantity: 1
     };
     dispatch(addItemFav(item_fav));
     setIsLiked(!isLiked);
@@ -215,7 +217,8 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       image,
       count: addedCount,
       description,
-      isCounter,
+      isCounter: true,
+      quantity: 1,
     };
     dispatch(addItem(item));
     if (addedCount > 0) {
