@@ -41,7 +41,7 @@ import { FaHome, FaHeart, FaSearch, FaUser } from "react-icons/fa";
 import Preloader from "./Preloader";
 import {User} from '../interfaces/user'
 import Categories from "./Categories";
-
+import { API_BASE_URL } from '../config/apiConfig';
 const categoriesList2 = [
   { id: 0, name: 'Популярное' },
   { id: 2506, name: 'Говядина' },
@@ -88,7 +88,7 @@ export const Catalog: React.FC = () => {
 
   const userOptions: AxiosRequestConfig = {
     method: 'GET',
-    url: `https://api.skyrodev.ru/user/${params.user}`,
+    url: `${API_BASE_URL}/user/${params.user}`,
   };
   async function getUser () {
     try {

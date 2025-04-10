@@ -7,6 +7,7 @@ import HeartButton from '../../assets/images/heart.svg'
 import Kimchistop from '../../assets/images/Frame 427321805.svg'
 import axios, { AxiosRequestConfig } from 'axios'
 import { RootState } from '../../redux/store'
+import { API_BASE_URL } from '../../config/apiConfig';
 export const Header: React.FC = () => {
   const { pathname } = useLocation()
   const { items, totalPrice} = useSelector(selectCart)
@@ -15,7 +16,7 @@ export const Header: React.FC = () => {
   const [TotalPrice, setTotalPrice] = useState(0)
   const cartRequestOptions:  AxiosRequestConfig ={
     method: "GET",
-    url: `https://api.skyrodev.ru/cart/data/${user?.id}`,
+    url: `${API_BASE_URL}/cart/data/${user?.id}`,
     headers: {
       "Content-Type": "application/json"}
   }

@@ -18,7 +18,7 @@ import './index.css'
 import axios, { AxiosRequestConfig } from 'axios';
 import { RootState } from "../../redux/store";
 import { selectPizzaData } from "../../redux/pizza/selectors";
-
+import { API_BASE_URL } from '../../config/apiConfig';
 type PizzaBlockProps = {
   id: string;
   image: string;
@@ -111,7 +111,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   
   const options: AxiosRequestConfig = {
     method: 'POST',
-    url: 'https://api.skyrodev.ru/cart/add',
+    url: `${API_BASE_URL}/cart/add`,
     headers: { 'Content-Type': 'application/json' },
     data: {product_id: id, quantity: 1,user_id: user?.id}
   };
@@ -133,7 +133,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     try {
       await axios.request({
         method: 'POST',
-        url: 'https://api.skyrodev.ru/cart/add',
+        url: `${API_BASE_URL}/cart/add`,
         headers: { 'Content-Type': 'application/json' },
         data: { product_id: id, quantity: -1, user_id: user?.id },
       });
@@ -145,7 +145,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
 
   const optionsFav: AxiosRequestConfig = {
     method: 'PATCH',
-    url: 'https://api.skyrodev.ru/favourites/update',
+    url: `${API_BASE_URL}/favourites/update`,
     headers: { 'Content-Type': 'application/json' },
     data: {product_id: id, user_id: user?.id}
   };

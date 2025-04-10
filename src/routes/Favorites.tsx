@@ -11,6 +11,7 @@ import { selectPizzaData } from "../redux/pizza/selectors";
 import { Pizza } from '../redux/pizza/types';
 import userSlice, { setUser } from '../redux/user/slice'
 import { useSelector, useDispatch } from 'react-redux'
+import { API_BASE_URL } from '../config/apiConfig';
 export const FavoriteContext = createContext<{ likeItems: any; setLikeItems: (items: any) => void }>({likeItems: [], setLikeItems: () => {}})
 
 export default function Favorites() {
@@ -23,7 +24,7 @@ export default function Favorites() {
 
   const userOptions: AxiosRequestConfig = {
     method: 'GET',
-    url: `https://api.skyrodev.ru/user/${params.user}`,
+    url: `${API_BASE_URL}/user/${params.user}`,
   };
   async function getUser () {
     try {
@@ -41,7 +42,7 @@ export default function Favorites() {
 
   const favRequestOptions: AxiosRequestConfig ={
     method: "GET",
-    url: `https://api.skyrodev.ru/favourites/${user?.id}`,
+    url: `${API_BASE_URL}/favourites/${user?.id}`,
     headers: {
       "Content-Type": "application/json"}
   }

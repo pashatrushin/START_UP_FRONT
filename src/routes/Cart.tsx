@@ -18,6 +18,7 @@ import '../scss/components/promo.css'
 import { RootState } from '../redux/store'
 import { selectPizzaData } from '../redux/pizza/selectors'
 import userSlice, { setUser } from '../redux/user/slice'
+import { API_BASE_URL } from '../config/apiConfig'
 
 export default function Cart({ initialCount = 1 }) {
 
@@ -83,15 +84,11 @@ export default function Cart({ initialCount = 1 }) {
   };
 
   const onClickPay = () => {
-
-
-    axios.post(`https://api.skyrodev.ru/order/?chatID=${params.chatID}`, sendData)
-    dispatch(clearItems())
+    axios.post(`${API_BASE_URL}/order/?chatID=${params.chatID}`, sendData);
+    dispatch(clearItems());
     // window.location.href = `https://api.kimchistop.ru/payments/?amount=${totalPrice}&number=${sendData.number}`
     const tg = Telegram.WebApp
     // tg.openLink(`https://ecom.alfabank.ru/standalone/pay/?depositFlag=1&logo=0&standalone_name=i-kimchistop65-api&currency%5B%5D=RUB&def=%7B%22name%22%3A%22amount%22%2C%22value%22%3A%22${totalPrice}%22%2C%22title%22%3A%22%D0%9E%D0%BF%D0%BB%D0%B0%D1%82%D0%B0+%D0%B7%D0%B0%D0%BA%D0%B0%D0%B7%D0%B0+${sendData.number}%22%7D&showcase=constructor&language=ru`)
-
-
   }
   const [count, setCount] = useState(initialCount)
 
@@ -128,7 +125,7 @@ export default function Cart({ initialCount = 1 }) {
 
   const userOptions: AxiosRequestConfig = {
     method: 'GET',
-    url: `https://api.skyrodev.ru/user/${params.user}`,
+    url: `${API_BASE_URL}/user/${params.user}`,
   };
   async function getUser () {
     try {
@@ -146,7 +143,9 @@ export default function Cart({ initialCount = 1 }) {
 
   const cartRequestOptions:  AxiosRequestConfig ={
     method: "GET",
-    url: `https://api.skyrodev.ru/cart/data/${user?.id}`,
+    // url: `${API_BASE_URL}/cart/data/${user?.id}`,
+    url: `${API_BASE_URL}/cart/data`,
+    params: { user_id: user?.id },
     headers: {
       "Content-Type": "application/json"}
   }
@@ -154,11 +153,14 @@ export default function Cart({ initialCount = 1 }) {
   async function getCart() {
     try {
       const response = await axios.request(cartRequestOptions)
-      setCartItems(response.data.items)
+      setCartItems(response.data.cart)
     } catch (error) {
       console.error(error)
     }
   }
+  useEffect(()=>{
+    console.log(cartItems)
+  })
 
   async function getCartTotalPrice() {
     try {

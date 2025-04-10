@@ -5,6 +5,7 @@ import { calcTotalPrice } from "./calcTotalPriceFav"
 import qs from "qs"
 import { GlobalContext } from "../routes/router"
 import { useContext } from "react"
+import { API_BASE_URL } from '../config/apiConfig';
 
 let data: FavItem[] = []
 async function getData() {
@@ -21,7 +22,7 @@ async function getData() {
   //   "favourites": []
   // }
   const params: any = JSON.parse(ls)
-  await axios.post(`https://api.skyrodev.ru/user/setstate?nickname=${params.user}`)
+  await axios.post(`${API_BASE_URL}/user/setstate?nickname=${params.user}`)
   // await axios.get(`https://api.skyrodev.ru/user/${params.user}/fav`).then(e => {
   //   e.data.forEach((item:any) =>{
   //     data.push(item)
