@@ -1,36 +1,34 @@
 import { Link } from 'react-router-dom';
 import { FavoriteItem } from '../components/FavoriteItem';
-import arrow_back from '../assets/images/Arrow 5.svg'
-import { createContext, useContext, useEffect, useState } from 'react';
-import { GlobalContext } from './router';
+import arrow_back from '../assets/images/Arrow 5.svg';
+import { useEffect, useState } from 'react';
 import EmptyFav from './EmptyFav';
-import { Detail } from './Detail';
-import axios, { AxiosRequestConfig } from 'axios'
+import axios, { AxiosRequestConfig } from 'axios';
 import { RootState } from '../redux/store';
-import { selectPizzaData } from "../redux/pizza/selectors";
-import { Pizza } from '../redux/pizza/types';
-import userSlice, { setUser } from '../redux/user/slice'
-import { useSelector, useDispatch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux';
 import { API_BASE_URL } from '../config/apiConfig';
-export const FavoriteContext = createContext<{ likeItems: any; setLikeItems: (items: any) => void }>({likeItems: [], setLikeItems: () => {}})
-
+import { setUser } from '../redux/user/slice';
+import { Pizza } from '../redux/pizza/types';
+import { useContext } from 'react';
+import { GlobalContext } from './router';
 export default function Favorites() {
-  // const  [likeItems, setLikeItems]  = useState([]);
-  const [favItems, setFavItems] = useState<Pizza[]>([])
-  const user = useSelector((state: RootState) => state.user.user)
-  const { items, status } = useSelector(selectPizzaData);
+  const [favItems, setFavItems] = useState<Pizza[]>([]); // Состояние для избранных товаров
+  const user = useSelector((state: RootState) => state.user.user); // Получаем текущего пользователя
+  const allItems = useSelector((state: RootState) => state.pizza.items); // Все товары из Redux Store
+  const dispatch = useDispatch();
   const params = useContext(GlobalContext);
-  const dispatch = useDispatch()
 
+  // Опции для получения данных пользователя
   const userOptions: AxiosRequestConfig = {
     method: 'GET',
     url: `${API_BASE_URL}/user/${params.user}`,
   };
-  async function getUser () {
-    try {
 
+  // Функция для получения данных пользователя
+  async function getUser() {
+    try {
       const { data } = await axios.request(userOptions);
-      dispatch(setUser(data))
+      dispatch(setUser(data));
     } catch (error) {
       if (axios.isAxiosError(error)) {
         console.error('Error message:', error.message);
@@ -40,35 +38,40 @@ export default function Favorites() {
     }
   }
 
-  const favRequestOptions: AxiosRequestConfig ={
-    method: "GET",
-    url: `${API_BASE_URL}/favourites/${user?.id}`,
+  // Опции для получения избранных товаров
+  const favRequestOptions: AxiosRequestConfig = {
+    method: 'GET',
+    url: `${API_BASE_URL}/favorites/`,
+    params: { user_id: user?.id },
     headers: {
-      "Content-Type": "application/json"}
-  }
+      'Content-Type': 'application/json',
+    },
+  };
 
+  // Функция для получения избранных товаров
   async function getFav() {
     try {
       const response = await axios.request(favRequestOptions);
-      const favIds = response.data.items.map((favItem: { product_id: number }) => favItem.product_id);
-  
-      // Фильтруем товары, оставляя только те, у которых id есть в избранном
-      const matchedItems = items.filter((item) => favIds.includes(item.id));
-      console.log(matchedItems)
+      const favIds = Array.isArray(response.data.favorites) // Проверяем, что favorites - массив
+        ? response.data.favorites
+        : [];
+
+      // Фильтруем товары, оставляя только те, которые есть в избранном
+      const matchedItems = allItems.filter((item) => favIds.includes(Number(item.id)));
       setFavItems(matchedItems);
     } catch (error) {
-      console.error(error);
+      console.error('Error fetching favorites:', error);
     }
   }
-  
 
-  useEffect(()=>{
+  // Загружаем данные при монтировании компонента
+  useEffect(() => {
     getUser();
     getFav();
-  }, [])
+  }, [dispatch]);
+
   return (
-    // <FavoriteContext.Provider value={{ likeItems, setLikeItems }}>
-      <div className="h-full bg-white">
+    <div className="h-full bg-white">
       {favItems.length > 0 ? (
         <div className="container container--cart">
           <div className="cart">
@@ -84,8 +87,8 @@ export default function Favorites() {
               </h1>
             </div>
             <div className="content__items">
-              {favItems.map((item: any) => (
-                <FavoriteItem key={item.id} {...item} />
+              {favItems.map((item) => (
+                <FavoriteItem key={item.id} {...item} image={item.image[0]} />
               ))}
             </div>
           </div>
@@ -95,6 +98,5 @@ export default function Favorites() {
       )}
     </div>
   );
-
 }
 

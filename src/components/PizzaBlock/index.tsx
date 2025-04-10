@@ -12,7 +12,7 @@ import { HiPlusSm } from "react-icons/hi";
 import { HiMinusSm } from "react-icons/hi";
 import { removeItemFav } from "../../redux/favorite/favSlice";
 import { addItemFav } from "../../redux/favorite/favSlice";
-import { FavoriteContext } from "../../routes/Favorites";
+// import { FavoriteContext } from "../../routes/Favorites";
 import { GlobalContext } from "../../routes/router";
 import './index.css'
 import axios, { AxiosRequestConfig } from 'axios';
@@ -44,7 +44,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
 }) => {
   const like = useRef(null);
   const dispatch = useDispatch();
-  const { likeItems, setLikeItems } = useContext(FavoriteContext);
+  // const { likeItems, setLikeItems } = useContext(FavoriteContext);
   // const [items, setItems] = useState([]);
   // const [favItems, setFavItems] = useState<Pizza[]>([])
   const cartItem = useSelector(selectCartItemById(id));
@@ -147,9 +147,9 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
 
   const optionsFav: AxiosRequestConfig = {
     method: 'PATCH',
-    url: `${API_BASE_URL}/favourites/update`,
+    url: `${API_BASE_URL}/favorites/update`,
     headers: { 'Content-Type': 'application/json' },
-    data: {product_id: id, user_id: user?.id}
+    params: {product_id: id, user_id: user?.id}
   };
   async function addToFav() {
     try {
@@ -158,7 +158,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       // console.log(optionsFav.data["product_id"])
       // setLikeItems(optionsFav.data["product_id"]);
       // console.log(likeItems);
-      setLikeItems(data);
+      // setLikeItems(data);
       localStorage.setItem("likeItems", JSON.stringify(data));
     } catch (error) {
       if (axios.isAxiosError(error)) {

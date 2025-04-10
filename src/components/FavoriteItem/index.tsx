@@ -10,9 +10,9 @@ import { selectCartItemById } from '../../redux/cart/selectors'
 import { useSelector } from 'react-redux'
 import { useState } from 'react'
 import { removeItemFav } from '../../redux/favorite/favSlice'
-import { FavoriteContext } from '../../routes/Favorites'
+// import { FavoriteContext } from '../../routes/Favorites'
 import axios, { AxiosRequestConfig } from 'axios';
-
+import { API_BASE_URL } from '../../config/apiConfig';
 import { GlobalContext } from '../../routes/router'
 import { HiPlusSm } from "react-icons/hi"
 import { HiMinusSm } from "react-icons/hi"
@@ -23,7 +23,7 @@ type FavoriteItemProps = {
   image: string,
   name: string,
   price: number,
-  quantity: number,
+  quantity?: number,
   description: string
 }
 type CartItemProps = {
@@ -31,7 +31,7 @@ type CartItemProps = {
   image: string,
   name: string,
   price: number,
-  quantity: number,
+  quantity?: number,
   description: string
 }
 export const FavoriteItem: React.FC<CartItemProps> = ({
@@ -43,7 +43,7 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
   description = ''
 }) => {
   const dispatch = useDispatch()
-  const {likeItems, setLikeItems} = useContext(FavoriteContext)
+  // const {likeItems, setLikeItems} = useContext(FavoriteContext)
   const cartItem2 = useSelector(selectCartItemById(id))
   const [isCounter, setIsCounter] = useState(localStorage.getItem('isCounter') === 'true')
   const addedCount2 = cartItem2 ? cartItem2.count: 0
@@ -105,9 +105,9 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
 
   const optionsFav: AxiosRequestConfig = {
     method: 'PATCH',
-    url: 'https://api.skyrodev.ru/favourites/update',
+    url: `${API_BASE_URL}/favorites/update`,
     headers: { 'Content-Type': 'application/json' },
-    data: {product_id: id, user_id: user?.id}
+    params: {product_id: id, user_id: user?.id}
   };
   
   async function addToFav() {
@@ -125,7 +125,7 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
 
   const options: AxiosRequestConfig = {
     method: 'DELETE',
-    url: 'https://api.skyrodev.ru/cart/delete',
+    url: `${API_BASE_URL}/cart/delete`,
     params: {product_id: id ,user_id: user?.id}
   };
 
@@ -146,9 +146,9 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
     try {
       await axios.request({
         method: 'POST',
-        url: 'https://api.skyrodev.ru/cart/add',
+        url: `${API_BASE_URL}/cart/add`,
         headers: { 'Content-Type': 'application/json' },
-        data: { product_id: id, quantity: 1, user_id: user?.id },
+        params: { product_id: id, quantity: 1, user_id: user?.id },
       });
     } catch (error) {
       console.error('Ошибка при добавлении товара:', error);

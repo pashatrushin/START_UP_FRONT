@@ -9,7 +9,7 @@ import { useState } from 'react'
 import { PizzaBlockProps } from './Detail'
 import qs from 'qs'
 import { render } from 'react-dom'
-import { FavoriteContext } from './Favorites'
+// import { FavoriteContext } from './Favorites'
 import { Home } from './Home'
 
 const Cart: React.FC = React.lazy(() => import(/*webpackChunkName: "Cart"*/'./Cart'))

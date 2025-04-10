@@ -14,7 +14,7 @@ import heart_img from "../assets/images/heart_img.svg";
 import heart_active from "../assets/images/heart.png";
 import { Link } from "react-router-dom";
 import arrow_back from "../assets/images/Arrow 5.svg";
-import { FavoriteContext } from "./Favorites";
+// import { FavoriteContext } from "./Favorites";
 import $ from "jquery";
 import { CartItem as CartItemType } from "../redux/cart/types";
 import qs, { ParsedQs } from "qs";
@@ -25,6 +25,7 @@ import { HiMinusSm } from "react-icons/hi";
 import "../scss/components/add_button.css";
 import "../scss/components/add_button.css";
 import { RootState } from "../redux/store";
+import { API_BASE_URL } from '../config/apiConfig';
 const typeNames = ["тонкое", "традиционное"];
 
 export type PizzaBlockProps = {
@@ -196,9 +197,9 @@ export const Detail = () => {
 
   const options: AxiosRequestConfig = {
     method: 'POST',
-    url: 'https://api.skyrodev.ru/cart/add',
+    url: `${API_BASE_URL}/cart/add`,
     headers: { 'Content-Type': 'application/json' },
-    data: {product_id: pizza.id, quantity: 1,user_id: user?.id}
+    params: {product_id: pizza.id, quantity: 1,user_id: user?.id}
   };
   
   async function addToCart() {
@@ -218,9 +219,9 @@ export const Detail = () => {
     try {
       await axios.request({
         method: 'POST',
-        url: 'https://api.skyrodev.ru/cart/add',
+        url: `${API_BASE_URL}/cart/add`,
         headers: { 'Content-Type': 'application/json' },
-        data: { product_id: pizza.id, quantity: -1, user_id: user?.id },
+        params: { product_id: pizza.id, quantity: -1, user_id: user?.id },
       });
     } catch (error) {
       console.error('Ошибка при добавлении товара:', error);
@@ -229,7 +230,7 @@ export const Detail = () => {
 
   const optionsDelete: AxiosRequestConfig = {
     method: 'DELETE',
-    url: 'https://api.skyrodev.ru/cart/delete',
+    url: `${API_BASE_URL}/cart/delete`,
     params: {product_id: pizza.id ,user_id: user?.id}
   };
 
@@ -272,7 +273,7 @@ export const Detail = () => {
 
   const optionsFav: AxiosRequestConfig = {
     method: 'PATCH',
-    url: 'https://api.skyrodev.ru/favourites/update',
+    url: `${API_BASE_URL}/favorites/update`,
     headers: { 'Content-Type': 'application/json' },
     data: {product_id: pizza.id, user_id: user?.id}
   };
@@ -299,7 +300,7 @@ export const Detail = () => {
     async function fetchPizza() {
       try {
         const { data } = await axios.get(
-          `https://api.skyrodev.ru/sbis/sbis-product/${params.id}`
+          `${API_BASE_URL}/food/${params.id}`
         );
 
         setPizza(data);
