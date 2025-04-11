@@ -50,15 +50,13 @@ export const cartSlice = createSlice({
     addItem(state, action: PayloadAction<CartItem>) {
       const findItem = state.items.find((obj) => obj.id === action.payload.id);
       if (findItem) {
-        findItem.quantity++; // Увеличиваем количество
+        findItem.quantity++;
       } else {
         state.items.push({
           ...action.payload,
-          quantity: 1, // Устанавливаем начальное количество
+          quantity: 1,
         });
       }
-      state.totalCount = calcTotalCount(state.items);
-      state.totalPrice = calcTotalPrice(state.items);
     },
     minusItem(state, action: PayloadAction<string>) {
       const findItem = state.items.find((obj) => obj.id === action.payload);

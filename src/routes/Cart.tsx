@@ -153,27 +153,21 @@ export default function Cart({ initialCount = 1 }) {
   async function getCart() {
     try {
       const response = await axios.request(cartRequestOptions);
-      let cart = response.data.cart;
-      let cartData: any[] = [];
+      const cart = response.data.cart;
 
-      if (Array.isArray(cart)) {
-        // Если пришёл массив, осуществляем обычное мапирование
-        cartData = cart.map((item: any) =>
-          typeof item === 'number' ? { id: item.toString(), quantity: 1 } : item
-        );
-      } else if (typeof cart === 'object' && cart !== null) {
-        // Преобразуем объект { [productId]: quantity } в массив объектов
-        cartData = Object.keys(cart).map((key) => ({
-          id: key,
-          quantity: cart[key],
-        }));
-      } else {
-        console.warn("Unexpected cart format:", cart);
-      }
+      // Убедитесь, что данные содержат все необходимые поля
+      const cartData = cart.map((item: any) => ({
+        id: item.id,
+        quantity: item.quantity,
+        price: item.price, // Убедитесь, что цена передаётся
+        image: item.image,
+        name: item.name,
+        description: item.description,
+      }));
 
       setCartItems(cartData);
     } catch (error) {
-      console.error(error);
+      console.error("Ошибка при получении данных корзины:", error);
     }
   }
 
@@ -235,8 +229,8 @@ export default function Cart({ initialCount = 1 }) {
                   key={`${item.id}-${index}`}
                   id={item.id}
                   image={item.image}
-                  foodName={item.name}
-                  price={item.price} // Убедитесь, что передаётся корректное значение price
+                  foodName={item.name} // Передаём название товара
+                  price={item.price} // Передаём цену товара
                   quantity={item.quantity}
                   description={item.description}
                   refreshCart={(removedId: string) =>

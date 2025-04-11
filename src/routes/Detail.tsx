@@ -31,7 +31,7 @@ const typeNames = ["тонкое", "традиционное"];
 export type PizzaBlockProps = {
   id: string;
   image: string;
-  name: string;
+  foodName: string;
   description: string;
   price: number;
   count: number;
@@ -50,7 +50,7 @@ export const Detail = () => {
   const [pizza, setPizza] = useState<PizzaBlockProps>({
     id: "0",
     image: "",
-    name: "",
+    foodName: "",
     description: "",
     price: 0,
     count: 0,
@@ -121,7 +121,7 @@ export const Detail = () => {
       dispatch(
         addItem({
           id: pizza.id,
-          foodName: pizza.name,
+          foodName: pizza.foodName,
           description: pizza.description,
           price: pizza.price,
           image: pizza.image,
@@ -155,7 +155,7 @@ export const Detail = () => {
   const onClickAddFav = () => {
     const item_fav: FavItem = {
       id: pizza.id,
-      foodName: pizza.name,
+      foodName: pizza.foodName,
       description: pizza.description,
       price: pizza.price,
       image: pizza.image,
@@ -178,7 +178,7 @@ export const Detail = () => {
   const handleAddToCart = () => {
     const item: CartItem = {
       id: pizza.id,
-      foodName: pizza.name,
+      foodName: pizza.foodName,
       description: pizza.description,
       price: pizza.price,
       image: pizza.image,
@@ -326,7 +326,7 @@ export const Detail = () => {
     <div className="content">
       <div className="w-full  bg-headerNav bg-cover flex justify-center items-center">
         <h1 className="text-white font-term text-2xl w-full text-center tracking-[5px] leading-5 px-5 py-5">
-          {pizza.name}
+          {pizza.foodName}
         </h1>
       </div>
       <div>
@@ -383,7 +383,7 @@ export const Detail = () => {
             <div className="bg-white rounded-t-2xl top-[-30px] relative">
               <div className="flex justify-between items-center w-full px-2">
                 <h4 className="font-term uppercase text-xl pl-3 pt-2">
-                  {pizza.name}
+                  {pizza.foodName}
                 </h4>
                 <h4 className="font-term uppercase text-4xl pl-3 tracking-[5px] text-[#474747] pt-2">
                   {pizza.price}P
