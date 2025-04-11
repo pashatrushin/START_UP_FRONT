@@ -13,7 +13,7 @@ export const favSlice = createSlice({
   initialState,
   reducers: {
     addItemFav(state, action: PayloadAction<FavItem>) {
-      const item: CartItem = {
+      const item: FavItem = {
         ...action.payload,
         quantity: 1, // Добавляем свойство quantity
       };

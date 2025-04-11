@@ -1,6 +1,6 @@
 export type FavItem = {
     id: string
-    name: string
+    foodName: string
     price: number
     image: string
     count: number

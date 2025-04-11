@@ -1,12 +1,10 @@
 export type CartItem = {
   id: string;
-  name: string;
+  foodName: string;
   price: number;
-  image: string;
-  count: number; // Если count больше не используется, можно удалить
+  image: string;// Если count больше не используется, можно удалить
   quantity: number; // Добавляем свойство quantity
   description: string;
-  isCounter: boolean;
   
 };
 

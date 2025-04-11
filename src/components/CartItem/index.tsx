@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, startTransition, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { addItem, minusItem, removeItem } from '../../redux/cart/slice'
@@ -12,7 +12,7 @@ import { API_BASE_URL } from '../../config/apiConfig'
 type CartItemProps = {
   id: string,
   image: string,
-  name: string,
+  foodName: string,
   price: number,
   quantity: number,
   description: string,
@@ -22,7 +22,7 @@ type CartItemProps = {
 export const CartItem: React.FC<CartItemProps> = ({
   id = '0',
   image = '',
-  name = '',
+  foodName = '',
   price = 0,
   quantity = 0,
   description = '',
@@ -33,6 +33,12 @@ export const CartItem: React.FC<CartItemProps> = ({
   
   // Локальное состояние для мгновенного обновления количества
   const [localQuantity, setLocalQuantity] = useState(quantity);
+
+  useEffect(() => {
+    if (!CartItem) {
+      setLocalQuantity(0); // Сбрасываем локальное состояние, если товар удален из корзины
+    }
+  }, [CartItem]);
 
   // Функция для полного удаления товара с сервера
   async function deleteFromCart(quantityToRemove: number) {
@@ -87,19 +93,23 @@ export const CartItem: React.FC<CartItemProps> = ({
   };
 
   const onClickPlus = async () => {
-    setLocalQuantity(prev => prev + 1);
-    dispatch(addItem({ id } as CartItemType));
-    await addToCart();
+    startTransition(() => {
+      setLocalQuantity((prev) => prev + 1);
+      dispatch(addItem({ id } as CartItemType));
+    });
+    await addToCart(); // Обновляем сервер
   };
 
   const onClickMinus = async () => {
-    if (localQuantity > 1) {
-      setLocalQuantity(prev => prev - 1);
-      dispatch(minusItem(id));
-      await decrementToCart();
-    } else {
-      await onClickRemove();
-    }
+    startTransition(() => {
+      if (localQuantity > 1) {
+        setLocalQuantity((prev) => prev - 1);
+        dispatch(minusItem(id));
+      } else {
+        onClickRemove();
+      }
+    });
+    await decrementToCart(); // Обновляем сервер
   };
 
   const onClickRemove = async () => {
@@ -123,7 +133,7 @@ export const CartItem: React.FC<CartItemProps> = ({
       </div>
       <div className='w-[165px]'>
         <Link to={`/${id}`} className='flex flex-col gap-1'>
-          <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{name}</h3>
+          <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{foodName}</h3>
           <p className='font-next text-[6px] leading-2 overflow-hidden whitespace-nowrap text-ellipsis'>{description}</p>
         </Link>
         <div className='flex items-center gap-2 mt-2'>

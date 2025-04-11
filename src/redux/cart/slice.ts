@@ -48,27 +48,30 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     addItem(state, action: PayloadAction<CartItem>) {
-      const findItem = state.items.find(obj => obj.id === action.payload.id);
+      const findItem = state.items.find((obj) => obj.id === action.payload.id);
       if (findItem) {
-        findItem.count++;
+        findItem.quantity++; // Увеличиваем количество
       } else {
         state.items.push({
           ...action.payload,
-          count: 1,
+          quantity: 1, // Устанавливаем начальное количество
         });
       }
       state.totalCount = calcTotalCount(state.items);
       state.totalPrice = calcTotalPrice(state.items);
     },
     minusItem(state, action: PayloadAction<string>) {
-      const findItem = state.items.find(obj => obj.id === action.payload);
-      if (findItem) findItem.count--;
-
+      const findItem = state.items.find((obj) => obj.id === action.payload);
+      if (findItem && findItem.quantity > 1) {
+        findItem.quantity--; // Уменьшаем количество
+      } else {
+        state.items = state.items.filter((obj) => obj.id !== action.payload);
+      }
       state.totalCount = calcTotalCount(state.items);
       state.totalPrice = calcTotalPrice(state.items);
     },
     removeItem(state, action: PayloadAction<string>) {
-      state.items = state.items.filter(obj => obj.id !== action.payload);
+      state.items = state.items.filter((obj) => obj.id !== action.payload);
       state.totalCount = calcTotalCount(state.items);
       state.totalPrice = calcTotalPrice(state.items);
     },

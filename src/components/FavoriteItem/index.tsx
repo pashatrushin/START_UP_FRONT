@@ -21,7 +21,7 @@ import { RootState } from '../../redux/store'
 type FavoriteItemProps = {
   id: string,
   image: string,
-  name: string,
+  foodName: string,
   price: number,
   quantity?: number,
   description: string
@@ -29,7 +29,7 @@ type FavoriteItemProps = {
 type CartItemProps = {
   id: string,
   image: string,
-  name: string,
+  foodName: string,
   price: number,
   quantity?: number,
   description: string
@@ -37,7 +37,7 @@ type CartItemProps = {
 export const FavoriteItem: React.FC<CartItemProps> = ({
   id = '0',
   image = '',
-  name = '',
+  foodName = '',
   price = 0,
   quantity = 0,
   description = ''
@@ -46,7 +46,7 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
   // const {likeItems, setLikeItems} = useContext(FavoriteContext)
   const cartItem2 = useSelector(selectCartItemById(id))
   const [isCounter, setIsCounter] = useState(localStorage.getItem('isCounter') === 'true')
-  const addedCount2 = cartItem2 ? cartItem2.count: 0
+  // const addedCount2 = cartItem2 ? cartItem2.count: 0
   const params = useContext(GlobalContext);
   const user = useSelector((state: RootState)=> state.user.user)
   const [localQuantity, setLocalQuantity] = useState(quantity);
@@ -157,17 +157,17 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
   const handleAddToCart = () => {
     const item: CartItem = {
       id,
-      name,
+      foodName,
       price,
       image,
-      count: 0,
+      // count: 0,
       description,
-      isCounter: true,
+      // isCounter: true,
       quantity: 1,
     }
     dispatch(addItem(item))
     setIsCounter(true)
-    localStorage.setItem('count', addedCount.toString())
+    // localStorage.setItem('count', addedCount.toString())
     localStorage.setItem('isCounter', (isCounter === true).toString())
     console.log(isCounter)
   }
@@ -176,7 +176,8 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
     addToFav();
   };
   const cartItem = useSelector(selectCartItemById(id))
-  const addedCount = cartItem ? cartItem.count : 0
+  // const addedCount = cartItem ? cartItem.count : 0
+  const addedCount = cartItem ? cartItem.quantity : 0;
   return (
 
       <div className='flex justify-between bg-[#F1F1F1] border-b-2 border-stone-700 py-2 px-2 gap-2'>
@@ -192,7 +193,7 @@ export const FavoriteItem: React.FC<CartItemProps> = ({
         </div>
         <div className='w-[165px]'>
           <Link key={id} to={`/${id}`} className='gap-2 flex flex-col'>
-            <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{name}</h3>
+            <h3 className='font-term text-xl leading-4 overflow-hidden whitespace-nowrap text-ellipsis'>{foodName}</h3>
             <p className='font-next text-[6px] leading-2 overflow-hidden whitespace-nowrap text-ellipsis'>{description}</p>
           </Link>
           {quantity > 0 ? (

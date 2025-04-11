@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo, useRef, useState } from "react";
+import React, { createContext, useContext, useMemo, useRef, useState, startTransition } from "react";
 import { Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartItemById } from "../../redux/cart/selectors";
@@ -19,54 +19,59 @@ import axios, { AxiosRequestConfig } from 'axios';
 import { RootState } from "../../redux/store";
 import { selectPizzaData } from "../../redux/pizza/selectors";
 import { API_BASE_URL } from '../../config/apiConfig';
+import { useEffect } from "react";
 export type PizzaBlockProps = {
   id: string;
   image: string;
-  name: string;
+  foodName: string;
   price: number;
   count: number;
   description: string;
   imageSrc: string;
   likeImageSrc: string;
   maxLength?: number;
-  category: number
+  category: number;
+  quantity: number;
 };
 
 export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   id = "0",
   image,
-  name = "",
+  foodName = "",
   price = 0,
   count = 0,
   description = "",
   maxLength = 9,
   category = 0,
+  quantity = 0
 }) => {
   const like = useRef(null);
   const dispatch = useDispatch();
   // const { likeItems, setLikeItems } = useContext(FavoriteContext);
   // const [items, setItems] = useState([]);
   // const [favItems, setFavItems] = useState<Pizza[]>([])
-  const cartItem = useSelector(selectCartItemById(id));
+  const cartItem = useSelector((state: RootState) =>
+    selectCartItemById(id)(state)
+  );
+
   const params = useContext(GlobalContext);
   var [isCounter, setIsCounter] = useState(
     localStorage.getItem("isCounter") === "true"
   );
-  const addedCount = cartItem ? cartItem.count : 0;
-  const counter = cartItem ? cartItem.isCounter : false;
+  const addedCount = cartItem ? cartItem.quantity : 0;
+  // const counter = cartItem ? cartItem.isCounter : false;
   const [isHeartActive, setIsHeartActive] = useState(false); ///
   // const [favItems, setFavItems] = useState<Pizza[]>([])
   const user = useSelector((state: RootState)=> state.user.user)
+  const [localQuantity, setLocalQuantity] = useState(quantity);
   const { items, status } = useSelector(selectPizzaData);
   const onClickAdd = () => {
     const item: CartItem = {
       id,
-      name,
+      foodName,
       price,
       image,
-      count: 0,
       description,
-      isCounter: true,
       quantity: 1,
     };
     dispatch(addItem(item));
@@ -89,6 +94,11 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       console.error(error);
     }
   };
+  useEffect(() => {
+    if (!cartItem) {
+      setLocalQuantity(0); // Сбрасываем локальное состояние, если товар удален из корзины
+    }
+  }, [cartItem]);
   // const [isLiked, setIsLiked] = useState<boolean>(() =>
   //   getStorageValue(`likeButton_${id}`, false)
   // );
@@ -144,7 +154,6 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     }
   };
 
-
   const optionsFav: AxiosRequestConfig = {
     method: 'PATCH',
     url: `${API_BASE_URL}/favorites/update`,
@@ -191,7 +200,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   const onClickAddFav = () => {
     const item_fav: FavItem = {
       id,
-      name,
+      foodName,
       price,
       image,
       count: 0,
@@ -209,43 +218,59 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
     }
   };
 
-  const handleAddToCart = () => {
-    const item: CartItem = {
-      id,
-      name,
-      price,
-      image,
-      count: addedCount,
-      description,
-      isCounter: true,
-      quantity: 1,
-    };
-    dispatch(addItem(item));
-    if (addedCount > 0) {
-      isCounter = true;
-      localStorage.setItem("isCounter", (isCounter === true).toString());
-    } else {
-      isCounter = false;
-      localStorage.setItem("isCounter", (isCounter === false).toString());
-    }
-    console.log(isCounter);
-  };
+  // const handleAddToCart = () => {
+  //   const item: CartItem = {
+  //     id,
+  //     name,
+  //     price,
+  //     image,
+  //     count: addedCount,
+  //     description,
+  //     isCounter: true,
+  //     quantity: 1,
+  //   };
+  //   dispatch(addItem(item));
+  //   if (addedCount > 0) {
+  //     isCounter = true;
+  //     localStorage.setItem("isCounter", (isCounter === true).toString());
+  //   } else {
+  //     isCounter = false;
+  //     localStorage.setItem("isCounter", (isCounter === false).toString());
+  //   }
+  //   console.log(isCounter);
+  // };
   const onClickPlus = () => {
-    dispatch(
-      addItem({
-        id,
-      } as CartItemType)
-    );
-    addToCart()
+    startTransition(() => {
+      dispatch(
+        addItem({
+          id,
+          foodName,
+          price,
+          image,
+          description,
+          quantity: 1,
+        })
+      );
+    });
+    addToCart(); // Обновляем сервер
   };
 
+  // const onClickMinus = () => {
+  //   startTransition(() => {
+  //     if (addedCount === 1) {
+  //       onClickRemove();
+  //       setIsCounter(false);
+  //     }
+  //     if (addedCount > 1) dispatch(minusItem(id));
+  //   });
+  //   decrementToCart(); // Обновляем сервер
+  // };
   const onClickMinus = () => {
-    if (addedCount === 1) {
-      onClickRemove();
-      setIsCounter(false);
+    if (addedCount > 1) {
+      dispatch(minusItem(id));
+    } else {
+      dispatch(removeItem(id));
     }
-    if (addedCount > 1) dispatch(minusItem(id));
-    decrementToCart();
   };
 
   const optionsDelete: AxiosRequestConfig = {
@@ -275,7 +300,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
   };
 
   React.useEffect(() => {
-    localStorage.setItem("count", addedCount.toString());
+    localStorage.setItem("count", (addedCount ?? 0).toString());
     localStorage.setItem("isCounter", setIsCounter.toString());
   }, [addedCount, isCounter]);
   // React.useEffect(() => {
@@ -296,7 +321,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
       <div className="flex flex-col px-2 gap-1">
         <div className="h-[70px] mt-1 flex flex-col gap-1">
           <h4 className="text-[12px] font-term leading-4 tracking-widest overflow-hidden whitespace-nowrap text-ellipsis">
-            {name}
+            {foodName}
           </h4>
           <span className="text-[7px] leading-tight relative pizza-block-description">
             {description}
@@ -307,7 +332,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
         </div>
         <div className="">
           <div className="flex justify-between">
-            {addedCount > 0 ? (
+            {/* {addedCount > 0 ? (
               <div className="gap-2">
                 <button
                   onClick={onClickMinus}
@@ -323,7 +348,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                   <HiPlusSm />
                 </button>
               </div>
-            ) : (
+            ) : ( */}
               <div>
                 <button
                   // onClick={handleAddToCart}
@@ -334,7 +359,7 @@ export const PizzaBlock: React.FC<PizzaBlockProps> = ({
                   {/* {addedCount > 0 && <i className='text-[10px] font-next font-bold bg-black text-white px-[5px] py-[2px] rounded-full ml-2'>{addedCount}</i>} */}
                 </button>
               </div>
-            )}
+            {/* )} */}
 
             {/* <button>
               <img

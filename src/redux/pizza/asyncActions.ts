@@ -17,7 +17,11 @@ export const fetchPizzas = createAsyncThunk<Pizza[], SearchPizzaParams>(
         identity,
       ),
     });
-    console.log(category);
+
+    if (!Array.isArray(data)) {
+      throw new Error('API did not return an array of pizzas');
+    }
+
     return data;
   },
 );

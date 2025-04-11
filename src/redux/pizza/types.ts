@@ -1,6 +1,6 @@
 export type Pizza = {
   id: string;
-  name: string;
+  foodName: string;
   price: number;
   description: string;
   image: string[];

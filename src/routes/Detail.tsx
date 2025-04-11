@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, startTransition } from "react";
 // import { addItem } from '../redux/cart/slice'
 import { GlobalLoader } from "../components/GlobalLoader";
 import { useSelector, useDispatch } from "react-redux";
@@ -63,8 +63,8 @@ export const Detail = () => {
   var [isCounter, setIsCounter] = useState(
     localStorage.getItem("isCounter") === "true"
   );
-  const counter = cartItem ? cartItem.isCounter : false;
-  const addedCount = cartItem ? cartItem.count : 0;
+  // const counter = cartItem ? cartItem.isCounter : false;
+  const addedCount = cartItem ? cartItem.quantity : 0;
   const user = useSelector((state: RootState)=> state.user.user)
   const getStorageValue = (key: string, defaultValue: any): any => {
     try {
@@ -117,17 +117,21 @@ export const Detail = () => {
     // setStorageValue(`likeButton_${id}`, !isLiked);
   };
   const onClickAdd = () => {
-    const item: CartItem = {
-      id: pizza.id,
-      name: pizza.name,
-      description: pizza.description,
-      price: pizza.price,
-      image: pizza.image,
-      count: pizza.count,
-      isCounter: true,
-      quantity: 0
-    };
-    dispatch(addItem(item));
+    startTransition(() => {
+      dispatch(
+        addItem({
+          id: pizza.id,
+          foodName: pizza.name,
+          description: pizza.description,
+          price: pizza.price,
+          image: pizza.image,
+          // count: pizza.count,
+          // isCounter: true,
+          quantity: 1,
+        })
+      );
+    });
+    addToCart(); // Обновляем сервер
   };
   // const PizzaBlock: React.FC<PizzaBlockProps> = ({
   //   id = '0',
@@ -151,7 +155,7 @@ export const Detail = () => {
   const onClickAddFav = () => {
     const item_fav: FavItem = {
       id: pizza.id,
-      name: pizza.name,
+      foodName: pizza.name,
       description: pizza.description,
       price: pizza.price,
       image: pizza.image,
@@ -174,12 +178,12 @@ export const Detail = () => {
   const handleAddToCart = () => {
     const item: CartItem = {
       id: pizza.id,
-      name: pizza.name,
+      foodName: pizza.name,
       description: pizza.description,
       price: pizza.price,
       image: pizza.image,
-      count: pizza.count,
-      isCounter: true,
+      // count: pizza.count,
+      // isCounter: true,
       quantity: 0
     };
     dispatch(addItem(item));
@@ -247,10 +251,10 @@ export const Detail = () => {
     }
   }
   const onClickRemove = () => {
-    if (window.confirm("Вы точно хотите удалить товар?")) {
+    startTransition(() => {
       dispatch(removeItem(pizza.id));
-    }
-    deleteFromCart();
+    });
+    deleteFromCart(); // Обновляем сервер
   };
   const onClickPlus = () => {
     dispatch(
@@ -391,7 +395,7 @@ export const Detail = () => {
               <div className="flex justify-between px-3 py-3 items-center relative top-[20px]">
                 <div className="flex w-full justify-end items-center h-full">
                   <div className="flex justify-between">
-                    <div className="container_addbutton">
+                    {/* <div className="container_addbutton">
                       <div className="toggle" onClick={onClickPlus}>
                         <input type="checkbox" />
                         <span className="button"></span>
@@ -405,7 +409,8 @@ export const Detail = () => {
                         <span className="button"></span>
                         <span className="label">-</span>
                       </div>
-                    </div>
+                    </div> */}
+                    <div className="uppercase font-term px-2 py-2 border-black border-2 rounded-md" onClick={onClickPlus}>Добавить</div>
                     {/* {addedCount > 0 ? (
                       <div className="gap-2">
                         <button

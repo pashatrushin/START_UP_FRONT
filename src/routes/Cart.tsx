@@ -233,7 +233,12 @@ export default function Cart({ initialCount = 1 }) {
               {cartItems.map((item: any, index) => (
                 <CartItem
                   key={`${item.id}-${index}`}
-                  {...item}
+                  id={item.id}
+                  image={item.image}
+                  foodName={item.name}
+                  price={item.price} // Убедитесь, что передаётся корректное значение price
+                  quantity={item.quantity}
+                  description={item.description}
                   refreshCart={(removedId: string) =>
                     setCartItems((prev) => prev.filter((ci: any) => ci.id !== removedId))
                   }
