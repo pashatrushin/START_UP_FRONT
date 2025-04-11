@@ -1,4 +1,4 @@
-import { Link, redirect } from 'react-router-dom'
+// import { Link, redirect } from 'react-router-dom'
 import { CartItem } from '../components/CartItem'
 import { useSelector, useDispatch } from 'react-redux'
 import { useContext, useState } from 'react'
