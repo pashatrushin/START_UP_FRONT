@@ -23,7 +23,6 @@ import { API_BASE_URL } from '../config/apiConfig'
 export default function Cart({ initialCount = 1 }) {
 
   const dispatch = useDispatch()
-  // const { totalCount, totalPrice, items } = useSelector(selectCart)
   const [userID, setUserID] = React.useState<number>()
   const [userData, setUserData] = React.useState({})
   const [promoactive, setPromoactive] = React.useState(false)
