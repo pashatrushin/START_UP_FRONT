@@ -115,7 +115,10 @@ export const Catalog: React.FC = () => {
       window.Telegram?.WebApp?.initDataUnsafe?.user
     ) {
       const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-      console.log(tgUser.id)
+      console.log('window.Telegram:', window.Telegram);
+      console.log('window.Telegram?.WebApp:', window.Telegram?.WebApp);
+      console.log('window.Telegram?.WebApp?.initDataUnsafe:', window.Telegram?.WebApp?.initDataUnsafe);
+      console.log('window.Telegram?.WebApp?.initDataUnsafe?.user:', window.Telegram?.WebApp?.initDataUnsafe?.user);
       axios
         .get(`${API_BASE_URL}/user/id/${tgUser.id}`)
         .then(res => {
