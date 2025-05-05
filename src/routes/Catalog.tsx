@@ -115,6 +115,7 @@ export const Catalog: React.FC = () => {
       axios.get(`${API_BASE_URL}/user/${tgUserNick}`)
       .then(res =>{
           console.log("tgNick", res.data.nickname)
+          console.log("DATA", res.data)
           localStorage.setItem('tgParams', JSON.stringify(res.data));
           if (res.data.nickname) {
             fetch(`https://music-shop24.ru/user/setstate?nickname=${res.data.nickname}`, {
