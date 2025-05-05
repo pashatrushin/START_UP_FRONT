@@ -124,6 +124,7 @@ export const Catalog: React.FC = () => {
       axios.get(userUrl)
         .then(res => {
           if (res.data.nickname) {
+            localStorage.setItem('user', JSON.stringify(res.data));
             // Сохраняем только user: nickname
             localStorage.setItem('tgParams', JSON.stringify({ user: res.data.nickname }));
             // Делаем setstate только если nickname определён
