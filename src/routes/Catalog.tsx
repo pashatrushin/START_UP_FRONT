@@ -109,21 +109,25 @@ export const Catalog: React.FC = () => {
   // }, [dispatch])
 
   useEffect(() => {
-    let tgUserId;
+    let tgUserNick;
     if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      tgUserId = window.Telegram.WebApp.initDataUnsafe.user.id;
-      console.log('tgUser.id:', tgUserId);
+      tgUserNick = window.Telegram.WebApp.initDataUnsafe.user.username;
+      axios.get(`${API_BASE_URL}/user/${tgUserNick}`)
+      .then(res =>{
+          console.log(res.data)
+      })
+      console.log('tgUser.id:', tgUserNick);
     } else {
       // fallback для локальной разработки
-      tgUserId = 1; // или другой тестовый id
-      console.log('Локальный режим, используем тестовый tgUserId:', tgUserId);
+      tgUserNick = 1; // или другой тестовый id
+      console.log('Локальный режим, используем тестовый tgUserId:', tgUserNick);
     }
   
     if (!localStorage.getItem('tgParams')) {
-      tgUserId = 1;
-      console.log("tgId",tgUserId)
+      tgUserNick = 1;
+      console.log("tgId",tgUserNick)
       axios
-        .get(`${API_BASE_URL}/user/id/${tgUserId}`)
+        .get(`${API_BASE_URL}/user/id/${tgUserNick}`)
         .then(res => {
           localStorage.setItem('tgParams', JSON.stringify(res.data));
           if (res.data.nickname) {
