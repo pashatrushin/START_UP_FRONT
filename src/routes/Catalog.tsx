@@ -110,32 +110,38 @@ export const Catalog: React.FC = () => {
 
   useEffect(() => {
     let tgUserNick;
+    let tgUserId;
     if (window.Telegram?.WebApp?.initDataUnsafe?.user) {
-      tgUserNick = window.Telegram.WebApp.initDataUnsafe.user.username;
-      axios.get(`${API_BASE_URL}/user/${tgUserNick}`)
-      .then(res =>{
-          console.log("tgNick", res.data.nickname)
-          console.log("DATA", res.data)
+      const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+      tgUserNick = tgUser.username;
+      tgUserId = tgUser.id;
+  
+      // Если есть username — ищем по нему, иначе по id
+      const userUrl = tgUserNick
+        ? `${API_BASE_URL}/user/${tgUserNick}`
+        : `${API_BASE_URL}/user/id/${tgUserId}`;
+  
+      axios.get(userUrl)
+        .then(res => {
+          console.log("tgNick", res.data.nickname);
+          console.log("DATA", res.data);
           localStorage.setItem('tgParams', JSON.stringify(res.data));
+          // Делаем setstate только если nickname определён
           if (res.data.nickname) {
-            fetch(`https://music-shop24.ru/user/setstate?nickname=${res.data.nickname}`, {
+            fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(res.data.nickname)}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             });
+          } else {
+            console.warn('nickname отсутствует в ответе backend!');
           }
-      })
-      console.log('tgUser.id:', tgUserNick);
+        });
+      console.log('tgUser.id:', tgUserId, 'tgUser.username:', tgUserNick);
     } else {
       // fallback для локальной разработки
-      tgUserNick = 1; // или другой тестовый id
-      console.log('Локальный режим, используем тестовый tgUserId:', tgUserNick);
-    }
-  
-    if (!localStorage.getItem('tgParams')) {
-      tgUserNick = 1;
-      console.log("tgId",tgUserNick)
-      axios
-        .get(`${API_BASE_URL}/user/id/${tgUserNick}`)
+      tgUserId = 1;
+      console.log('Локальный режим, используем тестовый tgUserId:', tgUserId);
+      axios.get(`${API_BASE_URL}/user/id/${tgUserId}`)
         .then(res => {
           localStorage.setItem('tgParams', JSON.stringify(res.data));
           if (res.data.nickname) {
