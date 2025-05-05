@@ -120,6 +120,7 @@ export const Catalog: React.FC = () => {
     }
   
     if (!localStorage.getItem('tgParams')) {
+      console.log("tgId",tgUserId)
       axios
         .get(`${API_BASE_URL}/user/id/${tgUserId}`)
         .then(res => {
