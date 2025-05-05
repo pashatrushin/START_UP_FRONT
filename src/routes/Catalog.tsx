@@ -123,12 +123,11 @@ export const Catalog: React.FC = () => {
   
       axios.get(userUrl)
         .then(res => {
-          console.log("tgNick", res.data.nickname);
-          console.log("DATA", res.data);
-          localStorage.setItem('tgParams', JSON.stringify(res.data));
-          // Делаем setstate только если nickname определён
           if (res.data.nickname) {
-            fetch(`https://music-shop24.ru/user/setstate?nickname=Vlad_IT_OU_Visual`, {
+            // Сохраняем только user: nickname
+            localStorage.setItem('tgParams', JSON.stringify({ user: res.data.nickname }));
+            // Делаем setstate только если nickname определён
+            fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(res.data.nickname)}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             });
@@ -143,8 +142,8 @@ export const Catalog: React.FC = () => {
       console.log('Локальный режим, используем тестовый tgUserId:', tgUserId);
       axios.get(`${API_BASE_URL}/user/id/${tgUserId}`)
         .then(res => {
-          localStorage.setItem('tgParams', JSON.stringify(res.data));
           if (res.data.nickname) {
+            localStorage.setItem('tgParams', JSON.stringify({ user: res.data.nickname }));
             fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(res.data.nickname)}`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
