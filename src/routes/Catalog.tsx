@@ -128,7 +128,7 @@ export const Catalog: React.FC = () => {
           localStorage.setItem('tgParams', JSON.stringify(res.data));
           // Делаем setstate только если nickname определён
           if (res.data.nickname) {
-            fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(res.data.nickname)}`, {
+            fetch(`https://music-shop24.ru/user/setstate?nickname=Vlad_IT_OU_Visual`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' }
             });
