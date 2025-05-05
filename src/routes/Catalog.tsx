@@ -114,7 +114,13 @@ export const Catalog: React.FC = () => {
       tgUserNick = window.Telegram.WebApp.initDataUnsafe.user.username;
       axios.get(`${API_BASE_URL}/user/${tgUserNick}`)
       .then(res =>{
-          console.log(res.data)
+          localStorage.setItem('tgParams', JSON.stringify(res.data));
+          if (res.data.nickname) {
+            fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(res.data.nickname)}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
       })
       console.log('tgUser.id:', tgUserNick);
     } else {
