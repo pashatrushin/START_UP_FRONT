@@ -86,27 +86,44 @@ export const Catalog: React.FC = () => {
 
   // UserOptions
 
-  const userOptions: AxiosRequestConfig = {
-    method: 'GET',
-    url: `${API_BASE_URL}/user/${params.user}`,
-  };
-  async function getUser () {
-    try {
+  // const userOptions: AxiosRequestConfig = {
+  //   method: 'GET',
+  //   url: `${API_BASE_URL}/user/${params.user}`,
+  // };
+  // async function getUser () {
+  //   try {
 
-      const { data } = await axios.request(userOptions);
-      dispatch(setUser(data))
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        console.error('Error message:', error.message);
-      } else {
-        console.error('Unexpected error:', error);
-      }
-    }
-  }
+  //     const { data } = await axios.request(userOptions);
+  //     dispatch(setUser(data))
+  //   } catch (error) {
+  //     if (axios.isAxiosError(error)) {
+  //       console.error('Error message:', error.message);
+  //     } else {
+  //       console.error('Unexpected error:', error);
+  //     }
+  //   }
+  // }
 
+  // useEffect(() => {
+  //   getUser();
+  // }, [dispatch])
   useEffect(() => {
-    getUser();
-  }, [dispatch])
+    if (
+      !localStorage.getItem('tgParams') &&
+      window.Telegram?.WebApp?.initDataUnsafe?.user
+    ) {
+      const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
+      axios
+        .get(`${API_BASE_URL}/user/${tgUser.id}`)
+        .then(res => {
+          // Сохраняем все поля пользователя
+          localStorage.setItem('tgParams', JSON.stringify(res.data));
+        })
+        .catch(() => {
+          // Обработка случая, если пользователь не найден
+        });
+    }
+  }, []);
 
   const getPizzas = async () => {
     // const sortBy = sort.sortProperty.replace('-', '')

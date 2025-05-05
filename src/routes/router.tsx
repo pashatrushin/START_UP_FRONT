@@ -21,6 +21,7 @@ const ErrorPage: React.FC = React.lazy(() => import(/*webpackChunkName: "ErrorPa
 const Favorites: React.FC = React.lazy(() => import(/*webpackChunkName: "Delivery"*/'./Favorites'))
 
 let tgParams: any = qs.parse(window.location.search.substring(1))
+// let tgParams = JSON.parse(localStorage.getItem('tgParams') || '{}');
 if (!localStorage.getItem('tgParams')){
   localStorage.setItem('tgParams', JSON.stringify(tgParams))
 } else if (!tgParams.user) {
