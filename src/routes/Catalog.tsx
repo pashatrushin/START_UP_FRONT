@@ -108,12 +108,12 @@ export const Catalog: React.FC = () => {
   //   getUser();
   // }, [dispatch])
   useEffect(() => {
+    console.log(window.Telegram?.WebApp?.initDataUnsafe?.user)
     if (
       !localStorage.getItem('tgParams') &&
       window.Telegram?.WebApp?.initDataUnsafe?.user
     ) {
       const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-      console.log(tgUser)
       axios
         .get(`${API_BASE_URL}/user/${tgUser.id}`)
         .then(res => {
