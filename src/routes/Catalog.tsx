@@ -107,23 +107,40 @@ export const Catalog: React.FC = () => {
   // useEffect(() => {
   //   getUser();
   // }, [dispatch])
+
   useEffect(() => {
-    console.log(window.Telegram?.WebApp?.initDataUnsafe?.user)
+    // 1. Если tgParams ещё нет, получаем пользователя через Telegram WebApp и сохраняем
     if (
       !localStorage.getItem('tgParams') &&
       window.Telegram?.WebApp?.initDataUnsafe?.user
     ) {
       const tgUser = window.Telegram.WebApp.initDataUnsafe.user;
-      console.log(tgUser.username)
+      console.log(tgUser.id)
       axios
-        .get(`${API_BASE_URL}/user/${tgUser.id}`)
+        .get(`${API_BASE_URL}/user/id/${tgUser.id}`)
         .then(res => {
-          // Сохраняем все поля пользователя
           localStorage.setItem('tgParams', JSON.stringify(res.data));
+          // После сохранения сразу делаем setstate
+          if (res.data.nickname) {
+            console.log(res.data.nickname)
+            fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(res.data.nickname)}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' }
+            });
+          }
         })
         .catch(() => {
           // Обработка случая, если пользователь не найден
         });
+    } else {
+      // 2. Если tgParams уже есть, делаем setstate сразу
+      const tgParams = JSON.parse(localStorage.getItem('tgParams') || '{}');
+      if (tgParams.nickname) {
+        fetch(`https://music-shop24.ru/user/setstate?nickname=${encodeURIComponent(tgParams.nickname)}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+      }
     }
   }, []);
 
